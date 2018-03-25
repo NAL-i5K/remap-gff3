@@ -8,20 +8,18 @@
 
 import sys
 import re
-import logging
 import copy
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+if not logger.handlers:
+    lh = logging.StreamHandler()
+    lh.setFormatter(logging.Formatter('%(levelname)-8s %(message)s'))
+    logger.addHandler(lh)
 
 __version__ = '1.0'
 
 if __name__ == '__main__':
-    logger_stderr = logging.getLogger(__name__+'stderr')
-    logger_stderr.setLevel(logging.INFO)
-    stderr_handler = logging.StreamHandler()
-    stderr_handler.setFormatter(logging.Formatter('%(levelname)-8s %(message)s'))
-    logger_stderr.addHandler(stderr_handler)
-    logger_null = logging.getLogger(__name__+'null')
-    null_handler = logging.NullHandler()
-    logger_null.addHandler(null_handler)
     import argparse
     from textwrap import dedent
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\

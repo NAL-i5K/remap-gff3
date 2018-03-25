@@ -8,10 +8,16 @@
 
 import sys
 import re
-import logging
 import copy
 from itertools import groupby
 from gff3 import Gff3
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+if not logger.handlers:
+    lh = logging.StreamHandler()
+    lh.setFormatter(logging.Formatter('%(levelname)-8s %(message)s'))
+    logger.addHandler(lh)
 
 __version__ = '1.0'
 
@@ -28,7 +34,7 @@ def build_parentID_dict(gff3):
                         parentID_dict[parent].append(line)
 
     return parentID_dict
-def polypeptide_re_construct(old_gff3, new_gff3,logger,report=None):
+def polypeptide_re_construct(old_gff3, new_gff3, tmp_identifier=False, report=None):
     old_CDS = dict()
     new_CDS = dict()
     old_polypeptide = dict()
@@ -95,9 +101,14 @@ def polypeptide_re_construct(old_gff3, new_gff3,logger,report=None):
 
                     for idx, child in enumerate(new_CDS_features_sort):
                         try:
-                            if child['attributes']['ID'] != old_CDS_features_sort[idx]['attributes']['ID']:
-                                flag = True
-                                break
+                            if tmp_identifier:
+                                if child['attributes']['tmp_identifier'] != old_CDS_features_sort[idx]['attributes']['tmp_identifier']:
+                                    flag = True
+                                    break
+                            else:
+                                if child['attributes']['ID'] != old_CDS_features_sort[idx]['attributes']['ID']:
+                                    flag = True
+                                    break
                         except KeyError:
                             flag = True
                         cPos.append(child['start'])
@@ -125,11 +136,7 @@ def polypeptide_re_construct(old_gff3, new_gff3,logger,report=None):
                         if report != None:
                             write_features(newpolypeptide, report)
 
-
-
-
-
-def re_construct(old_gff3, new_gff3,logger,report=None):
+def re_construct(old_gff3, new_gff3, tmp_identifier=False, report=None):
     old_parentID_dict = build_parentID_dict(old_gff3)
     new_parentID_dict = build_parentID_dict(new_gff3)
     eofindex = len(new_gff3.lines) - 1
@@ -174,9 +181,14 @@ def re_construct(old_gff3, new_gff3,logger,report=None):
                     flag = False
                     for idx, child in enumerate(new_children_sort):
                         try:
-                            if child['attributes']['ID'] != old_children_sort[idx]['attributes']['ID']:
-                                flag = True
-                                break
+                            if tmp_identifier:
+                                if child['attributes']['tmp_identifier'] != old_children_sort[idx]['attributes']['tmp_identifier']:
+                                    flag = True
+                                    break
+                            else:
+                                if child['attributes']['ID'] != old_children_sort[idx]['attributes']['ID']:
+                                    flag = True
+                                    break
                         except KeyError:
                             flag = True
                         cPos.append(child['start'])
@@ -254,47 +266,41 @@ def write_gff3(gff3, out_f):
                     if descendant['line_index'] in wrote_lines:
                         continue
                     write_features(descendant, out_gff)
+def main(old_gff, new_gff, output_gff, re_construct_features, tmp_identifier):
+    logger.info('Reading original GFF3 file: (%s)...\n', old_gff)
+    old_gff3 = Gff3(gff_file=old_gff, logger=None)
+
+    logger.info('Reading updated GFF3 file: (%s)...\n', new_gff)
+    new_gff3 = Gff3(gff_file=new_gff, logger=None)
+
+    if args.re_construct_features:
+        out_f = open(re_construct_features, 'w')
+    else:
+        out_f = None
+    polypeptide_re_construct(old_gff3=old_gff3, new_gff3=new_gff3, tmp_identifier=tmp_identifier, report=out_f)
+    re_construct(old_gff3=old_gff3, new_gff3=new_gff3, tmp_identifier=tmp_identifier, report=out_f)
+    write_gff3(new_gff3, output_gff)
+
+    if report:
+        out_f.close()
 
 if __name__ == '__main__':
-    logger_stderr = logging.getLogger(__name__+'stderr')
-    logger_stderr.setLevel(logging.INFO)
-    stderr_handler = logging.StreamHandler()
-    stderr_handler.setFormatter(logging.Formatter('%(levelname)-8s %(message)s'))
-    logger_stderr.addHandler(stderr_handler)
-    logger_null = logging.getLogger(__name__+'null')
-    null_handler = logging.NullHandler()
-    logger_null.addHandler(null_handler)
     import argparse
     from textwrap import dedent
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
 
     Quick start:
-    python2.7 re_construct_gff3_features.py -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -r report.txt
+    python2.7 %(prog)s -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -r report.txt
     """))
 
     parser.add_argument('-old_g', '--old_gff', type=str, help='The original gff3 file', required=True)
     parser.add_argument('-new_g', '--new_gff', type=str, help='The updated  gff3 file', required=True)
     parser.add_argument('-og', '--output_gff', type=str, help='output re-construct gff3 file', required=True)
-    parser.add_argument('-r', '--report', type=str, help='output re-construct report')
+    parser.add_argument('-re', '--re_construct_features', type=str, help='output re-construct features')
+    parser.add_argument('-tmp_ID', '--tmp_identifier', action="store_true", help='Generate a unique temporary identifier for all the feature in the input gff3 files. (Default: False)', default=False)
     parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
 
     args = parser.parse_args()
-
-    logger_stderr.info('Reading original GFF3 file: (%s)...\n', args.old_gff)
-    old_gff3 = Gff3(gff_file=args.old_gff, logger=None)
-
-    logger_stderr.info('Reading updated GFF3 file: (%s)...\n', args.new_gff)
-    new_gff3 = Gff3(gff_file=args.new_gff, logger=None)
-
-    if args.report:
-        out_f = open(args.report, 'w')
-    else:
-        out_f = None
-    polypeptide_re_construct(old_gff3=old_gff3, new_gff3=new_gff3,logger=logger_stderr, report=out_f)
-    re_construct(old_gff3=old_gff3, new_gff3=new_gff3,logger=logger_stderr, report=out_f)
-    write_gff3(new_gff3, args.output_gff)
-
-    if args.report:
-        out_f.close()
+    main(args.old_gff, args.new_gff, args.output_gff, args.re_construct_features, args.tmp_identifier)
 
 

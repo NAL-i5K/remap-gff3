@@ -5,7 +5,8 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
-
+import os
+import subprocess
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -16,11 +17,93 @@ if not logger.handlers:
 
 __version__ = '1.0'
 
+def tmp_identifier(in_gff, out_gff):
+    import uuid
+    out_f = open(out_gff, 'w')
+    with open(in_gff, 'rb') as in_f:
+        for line in in_f:
+            line = line.strip()
+            if len(line) != 0:
+                if not line.startswith('#'):
+                    tokens = line.split('\t')
+                    attributes = dict(re.findall('([^=;]+)=([^=;\n]+)', tokens[8]))
+                    # add tmp_identifier attribute to feature in gff3 file
+                    temp_id = str(uuid.uuid1())
+                    attributes['tmp_identifier'] = temp_id
+                    attributes_list = list()
+                    for key in attributes:
+                        attributes_list.append('%s=%s' % (str(key), str(attributes[key])))
+                    # update cloumn 9
+                    tokens[8] = ';'.join(attributes_list)
+                    out_f.write('\t'.join(tokens) + '\n')
+                else:
+                    out_f.write(line + '\n')
+
+def remove_tmpID(in_gff, out_gff):
+    out_f = open(out_gff, 'w')
+    with open(in_gff, 'rb') as in_f:
+        for line in in_f:
+            line = line.strip()
+            if len(line) != 0:
+                if not line.startswith('#'):
+                    tokens = line.split('\t')
+                    attributes = dict(re.findall('([^=;]+)=([^=;\n]+)', tokens[8]))
+                    del attributes['tmp_identifier']
+                    attributes_list = list()
+                    for key in attributes:
+                        attributes_list.append('%s=%s' % (str(key), str(attributes[key])))
+                    # update cloumn 9
+                    tokens[8] = ';'.join(attributes_list)
+                    out_f.write('\t'.join(tokens) + '\n')
+                else:
+                    out_f.write(line + '\n')
+
+def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file,tmp_identifier):
+    not_exact_match = set()
+    with open(CrossMap_log_file, 'rb') as log:
+        for line in log:
+            line = line.strip()
+            if len(line) != 0:
+                if line[0] != '#':
+                    token = line.split("\t")
+                    if len(token) < 10:
+                        continue
+                    match_state = token[9]
+                    if 'not exact match' in match_state:
+                        attribute_dict = dict(re.findall('([^=;]+)=([^=;\n]+)', token[8]))
+                        if tmp_identifier:
+                            if 'tmp_identifier' in attribute_dict:
+                                not_exact_match.add(attribute_dict['tmp_identifier'])
+                        else:
+                            if 'ID' in attribute_dict:
+                                not_exact_match.add(attribute_dict['ID'])
+                            else:
+                                logger.error('All features should have ID attributes. Please run the command with -tmp_ID.')
+    out_f = open(filtered_file, 'w')
+    with open(CrossMap_mapped_file, 'rb') as in_f:
+        for line in in_f:
+            line = line.strip()
+            if len(line) != 0:
+                if line[0] != '#':
+                    token = line.split("\t")
+                    if len(token) != 9:
+                        continue
+                    else:
+                        attribute_dict = dict(re.findall('([^=;]+)=([^=;\n]+)', token[8]))
+                        if tmp_identifier:
+                            if 'tmp_identifier' in attribute_dict and attribute_dict['tmp_identifier'] not in not_exact_match:
+                                out_f.write(line + '\n')
+                        else:
+                            if 'ID' in attribute_dict and attribute_dict['ID'] not in not_exact_match:
+                                out_f.write(line + '\n')
+    out_f.close()  
+    
+    
 if __name__ == '__main__':
-    import os
-    import subprocess
     import argparse
     from textwrap import dedent
+    import re_construct_gff3_features
+    import get_remove_feature
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
 
     Quick start:
@@ -48,19 +131,55 @@ if __name__ == '__main__':
     if not args.chain_file:
         import gff3_to_chain
         # generate a chain file and store in the [alignment_filename]_tmp/ directory
-        chain_file = '.'.join([os.path.splitext(args.alignment_file)[0], 'chain'])
+        chain_file = '%s.%s' % (os.path.splitext(args.alignment_file)[0], 'chain')
         logger.info('Generate a chain file: (%s)', chain_file)
         gff3_to_chain.main(alignment_file=args.alignment_file, target=args.target_fasta, query=args.query_fasta, output=chain_file)
     else:
         chain_file = args.chain_file
     
     for gff3 in args.input_gff:
-        gff3_filename, gff3_extension = os.path.splitext(gff3)
-        CrossMap_mapped = 
+        gff3_filename, gff3_extension = os.path.splitext(os.path.basename(gff3))
+        in_gff = gff      
         if args.tmp_identifier:
             # add tmp_identifier attribute to all the features in the input gff3 files
+            out_gff = '%s/%s_%s.%s' % (temp_dir, gff3_filename, 'mod', gff3_extension)
+            tmp_identifier(in_gff, out_gff)
+            out_gff = in_gff
         # run CrossMap
-        subprocess.Popen(['CrossMap.py', 'gff', chain_file, gff3, ).wait()
+        CrossMap_mapped_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, gff3_extension)
+        CrossMap_log_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, 'log')
+        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff3, CrossMap_mapped_file).wait()
+        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff3, '>', CrossMap_log_file).wait()
+        # remove all the not exact match features from the CrossMap output
+        filtered_file = '%s/%s_CrossMap_filtered%s' % (temp_dir, gff3_filename, gff3_extension)
+        filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file, args.tmp_identifier)
+        # re-construct the parent features
+        re_construct_file = '%s/%s_re_construct%s' % (temp_dir, gff3_filename, gff3_extension)
+        re_construct_report = '%s/%s_re_construct%s' % (temp_dir, gff3_filename, '.report')
+        re_construct_gff3_features.main(in_gff, filtered_file, re_construct_file, re_construct_report, args.tmp_identifier)
+        # run gff3_QC to generate QC report for re-constructed gff3 file
+        re_construct_QC = '%s/%s_re_construct_QC.report' % (temp_dir, gff3_filename)
+        subprocess.Popen(['gff3_QC.py', '-g', re_construct_file, '-f', args.query_fasta, '-o', re_construct_QC]).wait()
+        # remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
+        re_construct_QC_filtered = '%s/%s_re_construct_QC_filtered.report' % (temp_dir, gff3_filename)
+        subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC, '|', 'grep', '-v', '\'Ema0009\'', '>', re_construct_QC_filtered]).wait()
+        # run gff3_fix
+        update_gff = '%s%s%s' % (os.path.splitext(gff3), args.updated_postfix, gff3_extension)
+        remove_gff = '%s%s%s' % (os.path.splitext(gff3), args.removed_postfix, gff3_extension)
+        update_gff_QC = '%s_QC%s' % (os.path.splitext(gff3), gff3_extension)
+        if args.tmp_identifier:
+            tmp_update_gff = '%s/%s%s_tmp%s' % (temp_dir, in_gff3, args.updated_postfix, gff3_extension)
+            subprocess.Popen(['gff3_fix.py', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', tmp_update_gff])
+            get_remove_feature.output_remove_features(in_gff, tmp_update_gff, remove_gff, tmp_identifier)
+            remove_tmpID(tmp_update_gff, update_gff)
+        else:
+            subprocess.Popen(['gff3_fix.py', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff])
+            get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
+        subprocess.Popen(['gff3_QC.py', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
+
+        
+
+
 
 
 
