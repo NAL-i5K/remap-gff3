@@ -96,9 +96,9 @@ def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_fil
                         else:
                             if 'ID' in attribute_dict and attribute_dict['ID'] not in not_exact_match:
                                 out_f.write(line + '\n')
-    out_f.close()  
-    
-    
+    out_f.close()
+
+
 if __name__ == '__main__':
     import argparse
     from textwrap import dedent
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
 
     Quick start:
-    python %(progs)s -a alignment.gff3 -t_fa target.fa -q_fa query.fa -g A.gff3 B.gff3 C.gff3
+    python %(prog)s -a alignment.gff3 -t_fa target.fa -q_fa query.fa -g A.gff3 B.gff3 C.gff3
     """))
 
     parser.add_argument('-a', '--alignment_file', type=str, help='NCBI\'s whole-genome alignments(gff3 format).', required=True)
@@ -136,10 +136,10 @@ if __name__ == '__main__':
         gff3_to_chain.main(alignment_file=args.alignment_file, target=args.target_fasta, query=args.query_fasta, output=chain_file)
     else:
         chain_file = args.chain_file
-    
+
     for gff3 in args.input_gff:
         gff3_filename, gff3_extension = os.path.splitext(os.path.basename(gff3))
-        in_gff = gff      
+        in_gff = gff
         if args.tmp_identifier:
             # add tmp_identifier attribute to all the features in the input gff3 files
             out_gff = '%s/%s_%s.%s' % (temp_dir, gff3_filename, 'mod', gff3_extension)
@@ -148,8 +148,8 @@ if __name__ == '__main__':
         # run CrossMap
         CrossMap_mapped_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, gff3_extension)
         CrossMap_log_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, 'log')
-        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff3, CrossMap_mapped_file).wait()
-        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff3, '>', CrossMap_log_file).wait()
+        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff3, CrossMap_mapped_file]).wait()
+        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff3, '>', CrossMap_log_file]).wait()
         # remove all the not exact match features from the CrossMap output
         filtered_file = '%s/%s_CrossMap_filtered%s' % (temp_dir, gff3_filename, gff3_extension)
         filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file, args.tmp_identifier)
@@ -177,7 +177,6 @@ if __name__ == '__main__':
             get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
         subprocess.Popen(['gff3_QC.py', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
 
-        
 
 
 
@@ -185,4 +184,5 @@ if __name__ == '__main__':
 
 
 
-    
+
+
