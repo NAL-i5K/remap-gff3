@@ -130,11 +130,11 @@ if __name__ == '__main__':
 
     chain_file = None
     if not args.chain_file:
-        import gff3_to_chain
+        import gff_to_chain
         # generate a chain file and store in the [alignment_filename]_tmp/ directory
         chain_file = '%s.%s' % (os.path.splitext(args.alignment_file)[0], 'chain')
         logger.info('Generate a chain file: (%s)', chain_file)
-        gff3_to_chain.main(alignment_file=args.alignment_file, target=args.target_fasta, query=args.query_fasta, output=chain_file)
+        gff_to_chain.main(alignment_file=args.alignment_file, target=args.target_fasta, query=args.query_fasta, output=chain_file)
     else:
         chain_file = args.chain_file
 
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         in_gff = gff3
         if args.tmp_identifier:
             # add tmp_identifier attribute to all the features in the input gff3 files
-            out_gff = '%s/%s_%s.%s' % (temp_dir, gff3_filename, 'mod', gff3_extension)
+            out_gff = '%s/%s_%s%s' % (temp_dir, gff3_filename, 'mod', gff3_extension)
             tmp_identifier(in_gff, out_gff)
             out_gff = in_gff
         # run CrossMap
