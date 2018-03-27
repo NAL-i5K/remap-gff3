@@ -148,9 +148,11 @@ if __name__ == '__main__':
             out_gff = in_gff
         # run CrossMap
         CrossMap_mapped_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, gff3_extension)
-        CrossMap_log_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, 'log')
+        CrossMap_log_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, '.log')
         subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff, CrossMap_mapped_file]).wait()
-        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff, '>', CrossMap_log_file]).wait()
+        log_file = open(CrossMap_log_file, 'w')
+        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff], stdout=log_file).wait()
+        log_file.close()
         # remove all the not exact match features from the CrossMap output
         filtered_file = '%s/%s_CrossMap_filtered%s' % (temp_dir, gff3_filename, gff3_extension)
         filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file, args.tmp_identifier)
@@ -163,7 +165,9 @@ if __name__ == '__main__':
         subprocess.Popen(['gff3_QC.py', '-g', re_construct_file, '-f', args.query_fasta, '-o', re_construct_QC]).wait()
         # remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
         re_construct_QC_filtered = '%s/%s_re_construct_QC_filtered.report' % (temp_dir, gff3_filename)
-        subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC, '|', 'grep', '-v', '\'Ema0009\'', '>', re_construct_QC_filtered]).wait()
+        log_file = open(re_construct_QC_filtered, 'w')
+        subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC, '|', 'grep', '-v', '\'Ema0009\''], stdout=log_file).wait()
+        log_file.close()
         # run gff3_fix
         update_gff = '%s%s%s' % (os.path.splitext(gff3), args.updated_postfix, gff3_extension)
         remove_gff = '%s%s%s' % (os.path.splitext(gff3), args.removed_postfix, gff3_extension)
