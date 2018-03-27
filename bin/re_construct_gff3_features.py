@@ -273,7 +273,7 @@ def main(old_gff, new_gff, output_gff, re_construct_features, tmp_identifier):
     logger.info('Reading updated GFF3 file: (%s)...\n', new_gff)
     new_gff3 = Gff3(gff_file=new_gff, logger=None)
 
-    if args.re_construct_features:
+    if re_construct_features:
         out_f = open(re_construct_features, 'w')
     else:
         out_f = None
