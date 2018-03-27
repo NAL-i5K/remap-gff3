@@ -6,6 +6,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 import os
+import re
 import subprocess
 import logging
 logger = logging.getLogger(__name__)
@@ -107,7 +108,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
 
     Quick start:
-    python %(prog)s -a alignment.gff3 -t_fa target.fa -q_fa query.fa -g A.gff3 B.gff3 C.gff3
+    python %(prog)s -a alignment.gff3 -t_fa target.fa -q_fa query.fa -tmp_ID -g A.gff3 B.gff3 C.gff3
     """))
 
     parser.add_argument('-a', '--alignment_file', type=str, help='NCBI\'s whole-genome alignments(gff3 format).', required=True)
@@ -139,7 +140,7 @@ if __name__ == '__main__':
 
     for gff3 in args.input_gff:
         gff3_filename, gff3_extension = os.path.splitext(os.path.basename(gff3))
-        in_gff = gff
+        in_gff = gff3
         if args.tmp_identifier:
             # add tmp_identifier attribute to all the features in the input gff3 files
             out_gff = '%s/%s_%s.%s' % (temp_dir, gff3_filename, 'mod', gff3_extension)
@@ -148,8 +149,8 @@ if __name__ == '__main__':
         # run CrossMap
         CrossMap_mapped_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, gff3_extension)
         CrossMap_log_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, 'log')
-        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff3, CrossMap_mapped_file]).wait()
-        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff3, '>', CrossMap_log_file]).wait()
+        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff, CrossMap_mapped_file]).wait()
+        subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff, '>', CrossMap_log_file]).wait()
         # remove all the not exact match features from the CrossMap output
         filtered_file = '%s/%s_CrossMap_filtered%s' % (temp_dir, gff3_filename, gff3_extension)
         filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file, args.tmp_identifier)
@@ -168,21 +169,11 @@ if __name__ == '__main__':
         remove_gff = '%s%s%s' % (os.path.splitext(gff3), args.removed_postfix, gff3_extension)
         update_gff_QC = '%s_QC%s' % (os.path.splitext(gff3), gff3_extension)
         if args.tmp_identifier:
-            tmp_update_gff = '%s/%s%s_tmp%s' % (temp_dir, in_gff3, args.updated_postfix, gff3_extension)
-            subprocess.Popen(['gff3_fix.py', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', tmp_update_gff])
+            tmp_update_gff = '%s/%s%s_tmp%s' % (temp_dir, in_gff, args.updated_postfix, gff3_extension)
+            subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', tmp_update_gff])
             get_remove_feature.output_remove_features(in_gff, tmp_update_gff, remove_gff, tmp_identifier)
             remove_tmpID(tmp_update_gff, update_gff)
         else:
-            subprocess.Popen(['gff3_fix.py', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff])
+            subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff])
             get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
-        subprocess.Popen(['gff3_QC.py', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
-
-
-
-
-
-
-
-
-
-
+        subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
