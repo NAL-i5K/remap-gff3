@@ -281,7 +281,7 @@ def main(old_gff, new_gff, output_gff, re_construct_features, tmp_identifier):
     re_construct(old_gff3=old_gff3, new_gff3=new_gff3, tmp_identifier=tmp_identifier, report=out_f)
     write_gff3(new_gff3, output_gff)
 
-    if report:
+    if re_construct_features:
         out_f.close()
 
 if __name__ == '__main__':

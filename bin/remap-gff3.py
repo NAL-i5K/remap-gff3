@@ -145,7 +145,7 @@ if __name__ == '__main__':
             # add tmp_identifier attribute to all the features in the input gff3 files
             out_gff = '%s/%s_%s%s' % (temp_dir, gff3_filename, 'mod', gff3_extension)
             tmp_identifier(in_gff, out_gff)
-            out_gff = in_gff
+            in_gff = out_gff
         # run CrossMap
         CrossMap_mapped_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, gff3_extension)
         CrossMap_log_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, '.log')
@@ -162,7 +162,7 @@ if __name__ == '__main__':
         re_construct_gff3_features.main(in_gff, filtered_file, re_construct_file, re_construct_report, args.tmp_identifier)
         # run gff3_QC to generate QC report for re-constructed gff3 file
         re_construct_QC = '%s/%s_re_construct_QC.report' % (temp_dir, gff3_filename)
-        subprocess.Popen(['gff3_QC.py', '-g', re_construct_file, '-f', args.query_fasta, '-o', re_construct_QC]).wait()
+        subprocess.Popen(['gff3_QC', '-g', re_construct_file, '-f', args.query_fasta, '-o', re_construct_QC]).wait()
         # remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
         re_construct_QC_filtered = '%s/%s_re_construct_QC_filtered.report' % (temp_dir, gff3_filename)
         log_file = open(re_construct_QC_filtered, 'w')
