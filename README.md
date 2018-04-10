@@ -32,6 +32,27 @@ It is reasonable to expect that these assemblies will be updated, sometimes from
 * bin/remap-gff3.py
     * Quick start: `python remap-gff3.py -a alignment.gff3 -t_fa target.fa -q_fa query.fa -tmp_ID -g A.gff3 B.gff3 C.gff3`
 
-    
-
-
+## Installation
+### Prerequisite
+* python2.7
+* Perl
+### Install packages/modules via the setup.py
+```
+python setup.py install
+```
+### Install packages/modules in a Docker container
+#### Install Docker
+Follow [instructions](https://docs.docker.com/install/) to install Docker for your environment.
+#### Docker image
+Build a image from a Dockerfile  
+```
+git clone https://github.com/NAL-i5K/remap-gff3.git
+cd remap-gff3
+docker build -t remap-gff3-image .
+docker run -itp 8000:8000 remap-gff3-image
+```
+Get a pre-built image from DockerHub
+```
+docker pull dytk2134/remap-gff3-image
+docker run -itp 8000:8000 dytk2134/remap-gff3-image
+```

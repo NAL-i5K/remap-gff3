@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install --yes \
  build-essential \
  gcc-multilib \
  apt-utils \
+ wget \
  zlib1g-dev \
  libncurses5-dev \
  autotools-dev \
@@ -24,6 +25,7 @@ RUN apt-get update && apt-get install --yes \
  RUN wget https://pypi.python.org/packages/55/db/fa76af59a03c88ad80494fc0df2948740bbd58cd3b3ed5c31319624687cc/bx-python-0.7.3.tar.gz
  RUN pip install --upgrade pip && pip install \
   numpy \
+  gff3==0.3.0 \
   bx-python-0.7.3.tar.gz \
   CrossMap \
   gff3tool \

@@ -125,6 +125,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     temp_dir = '_'.join([os.path.splitext(args.alignment_file)[0], 'tmp'])
+    rm_tmp_list = []
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
 
@@ -135,6 +136,7 @@ if __name__ == '__main__':
         chain_file = '%s.%s' % (os.path.splitext(args.alignment_file)[0], 'chain')
         logger.info('Generate a chain file: (%s)', chain_file)
         gff_to_chain.main(alignment_file=args.alignment_file, target=args.target_fasta, query=args.query_fasta, output=chain_file)
+        rm_tmp_list.append(chain_file)
     else:
         chain_file = args.chain_file
 
@@ -146,6 +148,7 @@ if __name__ == '__main__':
             out_gff = '%s/%s_%s%s' % (temp_dir, gff3_filename, 'mod', gff3_extension)
             tmp_identifier(in_gff, out_gff)
             in_gff = out_gff
+            rm_tmp_list.append(out_gff)
         # run CrossMap
         CrossMap_mapped_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, gff3_extension)
         CrossMap_log_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, '.log')
@@ -153,9 +156,11 @@ if __name__ == '__main__':
         log_file = open(CrossMap_log_file, 'w')
         subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff], stdout=log_file).wait()
         log_file.close()
+
         # remove all the not exact match features from the CrossMap output
         filtered_file = '%s/%s_CrossMap_filtered%s' % (temp_dir, gff3_filename, gff3_extension)
         filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file, args.tmp_identifier)
+
         # re-construct the parent features
         re_construct_file = '%s/%s_re_construct%s' % (temp_dir, gff3_filename, gff3_extension)
         re_construct_report = '%s/%s_re_construct%s' % (temp_dir, gff3_filename, '.report')
@@ -166,18 +171,28 @@ if __name__ == '__main__':
         # remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
         re_construct_QC_filtered = '%s/%s_re_construct_QC_filtered.report' % (temp_dir, gff3_filename)
         log_file = open(re_construct_QC_filtered, 'w')
-        subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC, '|', 'grep', '-v', '\'Ema0009\''], stdout=log_file).wait()
+        proc1 = subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC], stdout=subprocess.PIPE)
+        subprocess.Popen(['grep', '-v', '\'Ema0009\''], stdin=proc1.stdout, stdout=log_file).wait()
         log_file.close()
+        rm_tmp_list.extend([CrossMap_mapped_file, CrossMap_log_file, filtered_file, re_construct_file, re_construct_report, re_construct_QC, re_construct_QC_filtered])
         # run gff3_fix
-        update_gff = '%s%s%s' % (os.path.splitext(gff3), args.updated_postfix, gff3_extension)
-        remove_gff = '%s%s%s' % (os.path.splitext(gff3), args.removed_postfix, gff3_extension)
-        update_gff_QC = '%s_QC%s' % (os.path.splitext(gff3), gff3_extension)
+        update_gff = '%s%s%s' % (os.path.splitext(gff3)[0], args.updated_postfix, gff3_extension)
+        remove_gff = '%s%s%s' % (os.path.splitext(gff3)[0], args.removed_postfix, gff3_extension)
+        update_gff_QC = '%s_QC%s' % (os.path.splitext(gff3)[0], gff3_extension)
         if args.tmp_identifier:
-            tmp_update_gff = '%s/%s%s_tmp%s' % (temp_dir, in_gff, args.updated_postfix, gff3_extension)
-            subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', tmp_update_gff])
+            tmp_update_gff = '%s/%s%s_tmp%s' % (temp_dir, os.path.basename(in_gff), args.updated_postfix, gff3_extension)
+            subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', tmp_update_gff]).wait()
             get_remove_feature.output_remove_features(in_gff, tmp_update_gff, remove_gff, tmp_identifier)
             remove_tmpID(tmp_update_gff, update_gff)
+            rm_tmp_list.append(tmp_update_gff)
         else:
-            subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff])
+            subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff]).wait()
             get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
         subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
+        if not args.temp:
+            for rmfile in rm_tmp_list:
+                os.remove(rmfile)
+            try:
+                os.rmdir(temp_dir)
+            except OSError:
+                pass
