@@ -174,7 +174,7 @@ if __name__ == '__main__':
         proc1 = subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC], stdout=subprocess.PIPE)
         subprocess.Popen(['grep', '-v', '\'Ema0009\''], stdin=proc1.stdout, stdout=log_file).wait()
         log_file.close()
-        rm_tmp_list.extend([CrossMap_mapped_file, CrossMap_log_file, filtered_file, re_construct_file, re_construct_report, re_construct_QC, re_construct_QC_filtered])
+        rm_tmp_list.extend([CrossMap_mapped_file, CrossMap_mapped_file + '.unmap',CrossMap_log_file, filtered_file, re_construct_file, re_construct_report, re_construct_QC, re_construct_QC_filtered])
         # run gff3_fix
         update_gff = '%s%s%s' % (os.path.splitext(gff3)[0], args.updated_postfix, gff3_extension)
         remove_gff = '%s%s%s' % (os.path.splitext(gff3)[0], args.removed_postfix, gff3_extension)
@@ -189,7 +189,7 @@ if __name__ == '__main__':
             subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff]).wait()
             get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
         subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
-        if not args.temp:
+        if args.temp:
             for rmfile in rm_tmp_list:
                 os.remove(rmfile)
             try:
