@@ -26,6 +26,9 @@ RUN apt-get update && apt-get install --yes \
  RUN pip install --upgrade pip && pip install \
   numpy \
   gff3==0.3.0 \
+  gff3tool
+
+WORKDIR /opt/remap-gff3
+RUN pip install \
   bx-python-0.7.3.tar.gz \
-  CrossMap \
-  gff3tool \
+  CrossMap
