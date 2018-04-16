@@ -44,12 +44,13 @@ There are two options for installing: directly from Github or Docker
 #### Install Docker
 Follow [instructions](https://docs.docker.com/install/) to install Docker for your environment.
 #### Docker image
-For container deploy, you can build a image from a Dockerfile or get a pre-built image from DockerHub.
+For container deploy, you can build a image from a Dockerfile or get a pre-built image from DockerHub.  
 **Build a image from a Dockerfile**
 1. `git clone https://github.com/NAL-i5K/remap-gff3.git`
 2. `cd remap-gff3`
 3. `docker build -t remap-gff3-image .`
-4. `docker run -itp 8000:8000 remap-gff3-image`
+4. `docker run -itp 8000:8000 remap-gff3-image`  
+  
 **Get a pre-built image from DockerHub**
 1. `docker pull dytk2134/remap-gff3-image`
 2. `docker run -itp 8000:8000 dytk2134/remap-gff3-image`
@@ -57,8 +58,8 @@ For container deploy, you can build a image from a Dockerfile or get a pre-built
 ## Troubleshooting
 Currently, bx-python has some install issue. Therefore, before getting start, make sure CrossMap is work.  
 Test CrossMap with the command below:  
-`CrossMap -h`
-If you see `ImportError:  No module named bigwig_file`, please follow the following step to fix this problem.
+`CrossMap -h`  
+If you see `ImportError:  No module named bigwig_file`, please follow the following steps to fix this problem.  
 1. `pip uninstall bx-python`
 2. `wget https://pypi.python.org/packages/55/db/fa76af59a03c88ad80494fc0df2948740bbd58cd3b3ed5c31319624687cc/bx-python-0.7.3.tar.gz`
 3. `pip install bx-python-0.7.3.tar.gz`
