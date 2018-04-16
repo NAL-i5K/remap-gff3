@@ -150,6 +150,7 @@ if __name__ == '__main__':
             in_gff = out_gff
             rm_tmp_list.append(out_gff)
         # run CrossMap
+        logger.info('Use CrossMap to update gff3 coordinates: (%s)', gff3)
         CrossMap_mapped_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, gff3_extension)
         CrossMap_log_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, '.log')
         subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff, CrossMap_mapped_file]).wait()
@@ -157,15 +158,18 @@ if __name__ == '__main__':
         subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff], stdout=log_file).wait()
         log_file.close()
 
+        logger.info('Remove all the not exact match features from the CrossMap output.')
         # remove all the not exact match features from the CrossMap output
         filtered_file = '%s/%s_CrossMap_filtered%s' % (temp_dir, gff3_filename, gff3_extension)
         filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file, args.tmp_identifier)
 
         # re-construct the parent features
+        logger.info('Re-construct the parent features for the models where all child features are perfectly re-mapped.')
         re_construct_file = '%s/%s_re_construct%s' % (temp_dir, gff3_filename, gff3_extension)
         re_construct_report = '%s/%s_re_construct%s' % (temp_dir, gff3_filename, '.report')
         re_construct_gff3_features.main(in_gff, filtered_file, re_construct_file, re_construct_report, args.tmp_identifier)
         # run gff3_QC to generate QC report for re-constructed gff3 file
+        logger.info('Run gff3_QC to generate QC report for re-constructed gff3 file.')
         re_construct_QC = '%s/%s_re_construct_QC.report' % (temp_dir, gff3_filename)
         subprocess.Popen(['gff3_QC', '-g', re_construct_file, '-f', args.query_fasta, '-o', re_construct_QC]).wait()
         # remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
@@ -179,6 +183,7 @@ if __name__ == '__main__':
         update_gff = '%s%s%s' % (os.path.splitext(gff3)[0], args.updated_postfix, gff3_extension)
         remove_gff = '%s%s%s' % (os.path.splitext(gff3)[0], args.removed_postfix, gff3_extension)
         update_gff_QC = '%s_QC%s' % (os.path.splitext(gff3)[0], gff3_extension)
+        logger.info('Run gff3_fix to correct GFF3 format errors.')
         if args.tmp_identifier:
             tmp_update_gff = '%s/%s%s_tmp%s' % (temp_dir, os.path.basename(in_gff), args.updated_postfix, gff3_extension)
             subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', tmp_update_gff]).wait()
@@ -188,6 +193,7 @@ if __name__ == '__main__':
         else:
             subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff]).wait()
             get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
+        logger.info('Get updated and removed GFF3 files.')
         subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
         if args.temp:
             for rmfile in rm_tmp_list:
