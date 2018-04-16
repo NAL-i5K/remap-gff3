@@ -44,7 +44,7 @@ There are two options for installing: directly from Github or Docker
 #### Install Docker
 Follow [instructions](https://docs.docker.com/install/) to install Docker for your environment.
 #### Docker image
-For container deploy, you can build a image from a Dockerfile or get a pre-built image from DockerHub.  
+For container deployment, you can build a image from a Dockerfile or get a pre-built image from DockerHub.  
 **Build a image from a Dockerfile**
 1. `git clone https://github.com/NAL-i5K/remap-gff3.git`
 2. `cd remap-gff3`
