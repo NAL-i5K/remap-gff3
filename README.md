@@ -8,13 +8,16 @@ It is reasonable to expect that these assemblies will be updated, sometimes from
 2. Filter whole-genome alignment results based on quality criteria.
     * For now, we will focus on perfect alignments. 
     * Use NCBI's alignment results in gff3 format to filter out alignments with reciprocity=3 and pct_identity_gap=100
-3. Generate input file for coordinate remap program based on filtered alignment results.
-    * generate file in UCSC chain format. https://genome.ucsc.edu/goldenpath/help/chain.html
-    * Use crossmap to update gff3 coordinates. http://crossmap.sourceforge.net/
+3. Generate a chain file for coordinate remap program based on filtered alignment results.
+    * UCSC [chain format] (https://genome.ucsc.edu/goldenpath/help/chain.html)
+    * you can generate a chain file by using gff_to_chain.py
+4. Use CrossMap to update gff3 coordinates
+    * [CrossMap](http://crossmap.sourceforge.net/)
+5. Post-process the output from CrossMap
     * remove all the not exact match features from the CrossMap output
     * re-construct the parent features for the models where all child features are perfectly re-mapped, but the parents aren't
     * run gff3_QC to generate QC report for re-constructed gff3 file
-    * remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
+        * For now, we will remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report, and then run gff3_fix to correct format errors.
     * run gff3_fix to correct GFF3 format errors
     * get updated and removed GFF3 files
 
