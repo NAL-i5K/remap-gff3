@@ -7,6 +7,7 @@
 # (at your option) any later version.
 import os
 import re
+import sys
 import subprocess
 import logging
 logger = logging.getLogger(__name__)
@@ -61,6 +62,7 @@ def remove_tmpID(in_gff, out_gff):
 
 def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file,tmp_identifier):
     not_exact_match = set()
+    ID_set = set()
     with open(CrossMap_log_file, 'rb') as log:
         for line in log:
             line = line.strip()
@@ -70,16 +72,25 @@ def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_fil
                     if len(token) < 10:
                         continue
                     match_state = token[9]
+                    attribute_dict = dict(re.findall('([^=;]+)=([^=;\n]+)', token[8]))
+                    try:
+                        if not tmp_identifier:
+                            if attribute_dict['ID'] in ID_set:
+                                logger.error('All features should have an unique ID. Please run the command with -tmp_ID.')
+                                sys.exit(0)
+                            else:
+                                ID_set.add(attribute_dict['ID'])
+                    except KeyError:
+                        logger.error('All features should have an unique ID. Please run the command with -tmp_ID.')
+                        sys.exit(0)
                     if 'not exact match' in match_state:
-                        attribute_dict = dict(re.findall('([^=;]+)=([^=;\n]+)', token[8]))
                         if tmp_identifier:
                             if 'tmp_identifier' in attribute_dict:
                                 not_exact_match.add(attribute_dict['tmp_identifier'])
                         else:
                             if 'ID' in attribute_dict:
                                 not_exact_match.add(attribute_dict['ID'])
-                            else:
-                                logger.error('All features should have ID attributes. Please run the command with -tmp_ID.')
+
     out_f = open(filtered_file, 'w')
     with open(CrossMap_mapped_file, 'rb') as in_f:
         for line in in_f:

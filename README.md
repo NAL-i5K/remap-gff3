@@ -83,6 +83,8 @@ optional arguments:
                         Target genome assembly
   -q_fa QUERY_FASTA, --query_fasta QUERY_FASTA
                         Query genome assembly
+  -dir OUT_DIR, --out_dir OUT_DIR
+                        Output directory
   -g INPUT_GFF [INPUT_GFF ...], --input_gff INPUT_GFF [INPUT_GFF ...]
                         List one or more GFF3 files to be updated.
   -tmp_ID, --tmp_identifier
