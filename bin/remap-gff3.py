@@ -114,6 +114,7 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--alignment_file', type=str, help='NCBI\'s whole-genome alignments(gff3 format).', required=True)
     parser.add_argument('-t_fa', '--target_fasta', type=str, help='Target genome assembly', required=True)
     parser.add_argument('-q_fa', '--query_fasta', type=str, help='Query genome assembly', required=True)
+    parser.add_argument('-dir', '--out_dir', type=str, help='Output directory', required=True)
     parser.add_argument('-g', '--input_gff', nargs='+', type=str, help='List one or more GFF3 files to be updated.', required=True)
     parser.add_argument('-tmp_ID', '--tmp_identifier', action="store_true", help='Generate a unique temporary identifier for all the feature in the input gff3 files. (Default: False)', default=False)
     parser.add_argument('-chain', '--chain_file', type=str, help='Input a ready-made chain file.')
@@ -124,8 +125,12 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    temp_dir = '_'.join([os.path.splitext(args.alignment_file)[0], 'tmp'])
+    if not os.path.exists(args.out_dir):
+        os.makedirs(args.out_dir)
+    temp_dir_name = '%s_%s' % (os.path.splitext(os.path.basename(args.alignment_file))[0], 'tmp')
+    temp_dir = os.path.join(args.out_dir, temp_dir_name)
     rm_tmp_list = []
+
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
 
@@ -133,8 +138,9 @@ if __name__ == '__main__':
     if not args.chain_file:
         import gff_to_chain
         # generate a chain file and store in the [alignment_filename]_tmp/ directory
-        chain_file = '%s.%s' % (os.path.splitext(args.alignment_file)[0], 'chain')
-        logger.info('Generate a chain file: (%s)', chain_file)
+        chain_file_name = '%s.%s' % (os.path.splitext(os.path.basename(args.alignment_file))[0], 'chain')
+        chain_file = os.path.join(temp_dir, chain_file_name)
+        logger.info('===== Generate a chain file: (%s) =====', chain_file)
         gff_to_chain.main(alignment_file=args.alignment_file, target=args.target_fasta, query=args.query_fasta, output=chain_file)
         rm_tmp_list.append(chain_file)
     else:
@@ -150,7 +156,7 @@ if __name__ == '__main__':
             in_gff = out_gff
             rm_tmp_list.append(out_gff)
         # run CrossMap
-        logger.info('Use CrossMap to update gff3 coordinates: (%s)', gff3)
+        logger.info('===== Use CrossMap to update gff3 coordinates: (%s) =====', gff3)
         CrossMap_mapped_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, gff3_extension)
         CrossMap_log_file = '%s/%s_CrossMap%s' % (temp_dir, gff3_filename, '.log')
         subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff, CrossMap_mapped_file]).wait()
@@ -158,18 +164,18 @@ if __name__ == '__main__':
         subprocess.Popen(['CrossMap.py', 'gff', chain_file, in_gff], stdout=log_file).wait()
         log_file.close()
 
-        logger.info('Remove all the not exact match features from the CrossMap output.')
+        logger.info('===== Remove all the not exact match features from the CrossMap output =====')
         # remove all the not exact match features from the CrossMap output
         filtered_file = '%s/%s_CrossMap_filtered%s' % (temp_dir, gff3_filename, gff3_extension)
         filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file, args.tmp_identifier)
 
         # re-construct the parent features
-        logger.info('Re-construct the parent features for the models where all child features are perfectly re-mapped.')
+        logger.info('===== Re-construct the parent features for the models where all child features are perfectly re-mapped =====')
         re_construct_file = '%s/%s_re_construct%s' % (temp_dir, gff3_filename, gff3_extension)
         re_construct_report = '%s/%s_re_construct%s' % (temp_dir, gff3_filename, '.report')
         re_construct_gff3_features.main(in_gff, filtered_file, re_construct_file, re_construct_report, args.tmp_identifier)
         # run gff3_QC to generate QC report for re-constructed gff3 file
-        logger.info('Run gff3_QC to generate QC report for re-constructed gff3 file.')
+        logger.info('===== Run gff3_QC to generate QC report for re-constructed gff3 file =====')
         re_construct_QC = '%s/%s_re_construct_QC.report' % (temp_dir, gff3_filename)
         subprocess.Popen(['gff3_QC', '-g', re_construct_file, '-f', args.query_fasta, '-o', re_construct_QC]).wait()
         # remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
@@ -180,10 +186,10 @@ if __name__ == '__main__':
         log_file.close()
         rm_tmp_list.extend([CrossMap_mapped_file, CrossMap_mapped_file + '.unmap',CrossMap_log_file, filtered_file, re_construct_file, re_construct_report, re_construct_QC, re_construct_QC_filtered])
         # run gff3_fix
-        update_gff = '%s%s%s' % (os.path.splitext(gff3)[0], args.updated_postfix, gff3_extension)
-        remove_gff = '%s%s%s' % (os.path.splitext(gff3)[0], args.removed_postfix, gff3_extension)
-        update_gff_QC = '%s_QC%s' % (os.path.splitext(gff3)[0], gff3_extension)
-        logger.info('Run gff3_fix to correct GFF3 format errors.')
+        update_gff = os.path.join(args.out_dir, '%s%s%s' % (gff3_filename, args.updated_postfix, gff3_extension))
+        remove_gff = os.path.join(args.out_dir, '%s%s%s' % (gff3_filename, args.removed_postfix, gff3_extension))
+        update_gff_QC = os.path.join(args.out_dir, '%s_QC%s' % (gff3_filename, gff3_extension))
+        logger.info('===== Run gff3_fix to correct GFF3 format errors =====')
         if args.tmp_identifier:
             tmp_update_gff = '%s/%s%s_tmp%s' % (temp_dir, os.path.basename(in_gff), args.updated_postfix, gff3_extension)
             subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', tmp_update_gff]).wait()
@@ -193,7 +199,7 @@ if __name__ == '__main__':
         else:
             subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff]).wait()
             get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
-        logger.info('Get updated and removed GFF3 files.')
+        logger.info('===== Get updated and removed GFF3 files =====')
         subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
         if args.temp:
             for rmfile in rm_tmp_list:
