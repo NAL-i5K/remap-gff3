@@ -56,13 +56,15 @@ For container deployment, you can build a image from a Dockerfile or get a pre-b
 2. `docker run -itp 8000:8000 dytk2134/remap-gff3-image`
 
 ## Troubleshooting
-Currently, bx-python has some install issue. Therefore, before getting start, make sure CrossMap is work.  
-Test CrossMap with the command below:  
-`CrossMap -h`  
-If you see `ImportError:  No module named bigwig_file`, please follow the following steps to fix this problem.  
-1. `pip uninstall bx-python`
-2. `wget https://pypi.python.org/packages/55/db/fa76af59a03c88ad80494fc0df2948740bbd58cd3b3ed5c31319624687cc/bx-python-0.7.3.tar.gz`
-3. `pip install bx-python-0.7.3.tar.gz`
+Currently, `remap-gff3` has an installation issue becasue one of the fundamental dependency of `bx-python`. Therefore, before you start to use `remap-gff3`, make sure `CrossMap` is work using command: `CrossMap -h`.
+
+If you see `ImportError:  No module named bigwig_file`, please follow the steps  below to fix this problem.  
+
+``` shell
+pip uninstall bx-python
+wget https://pypi.python.org/packages/55/db/fa76af59a03c88ad80494fc0df2948740bbd58cd3b3ed5c31319624687cc/bx-python-0.7.3.tar.gz
+pip install bx-python-0.7.3.tar.gz
+```
 
 ## Quick Start
 * bin/remap-gff3.py
