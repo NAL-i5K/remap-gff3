@@ -7,7 +7,7 @@ It is reasonable to expect that these assemblies will be updated, sometimes from
 ## General Workflow
 
 1. Generate whole-genome alignment file.
-    * For now, we will use NCBI's whole-genome alignments, available [here](ftp://ftp.ncbi.nlm.nih.gov/pub/remap/)
+    * For now, we will use NCBI's whole-genome alignments, available here: ftp://ftp.ncbi.nlm.nih.gov/pub/remap/
 
 2. Filter whole-genome alignment results based on quality criteria.
     * For now, we will focus on perfect alignments. 
@@ -45,7 +45,8 @@ There are two options for installing: directly from Github or Docker
 ### Install from Github
 
 1. `git clone https://github.com/NAL-i5K/remap-gff3.git`
-2. At root directory of this repo, `pip install .`
+2. `cd remap-gff3`
+3. `pip install .`
 
 ### Docker
 
@@ -92,7 +93,7 @@ usage: remap-gff3.py [-h] -a ALIGNMENT_FILE -t_fa TARGET_FASTA -q_fa
                      [-r REMOVED_POSTFIX] [-v]
 
 Quick start:
-python remap-gff3.py -a alignment.gff3 -t_fa target.fa -q_fa query.fa -tmp_ID -tmp -g A.gff3 B.gff3 C.gff3
+python remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -127,7 +128,7 @@ optional arguments:
 ### generate file in UCSC chain format
 
 * gff_to_chain.py
-  * Quick start: `gff_to_chain.py -t_fa target.fasta -q_fa query.fasta -g example.gff3 -o chain.txt`
+  * Quick start: `gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -g alignment.gff3 -o chain.txt`
 
 ### re-construct missing features in gff3
 
@@ -137,4 +138,4 @@ optional arguments:
 ### get removed features
 
 * get_remove_feature.py
-  * Quick start: `get_remove_feature.py -old_g old.gff3 -new_g new.gff3 -og remove_features_.gff3`
+  * Quick start: `get_remove_feature.py -old_g old.gff3 -new_g new.gff3 -og remove_features.gff3`

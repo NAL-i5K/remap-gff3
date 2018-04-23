@@ -139,7 +139,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
 
     Quick start:
-    python %(prog)s -t_fa target.fasta -q_fa query.fasta -g example.gff3 -o chain.txt
+    python %(prog)s -t_fa example_file/target.fa -q_fa example_file/query.fa -g alignment.gff3 -o chain.txt
     """))
 
     parser.add_argument('-a', '--alignment_file', type=str, help='NCBI\'s whole-genome alignments(gff3 format).', required=True)
