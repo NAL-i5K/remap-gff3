@@ -268,10 +268,10 @@ def write_gff3(gff3, out_f):
                     write_features(descendant, out_gff)
 def main(old_gff, new_gff, output_gff, re_construct_features, tmp_identifier):
     logger.info('Reading original GFF3 file: (%s)...\n', old_gff)
-    old_gff3 = Gff3(gff_file=old_gff, logger=None)
+    old_gff3 = Gff3(gff_file=old_gff)
 
     logger.info('Reading updated GFF3 file: (%s)...\n', new_gff)
-    new_gff3 = Gff3(gff_file=new_gff, logger=None)
+    new_gff3 = Gff3(gff_file=new_gff)
 
     if re_construct_features:
         out_f = open(re_construct_features, 'w')
