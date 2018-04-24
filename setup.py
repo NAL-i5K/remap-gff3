@@ -65,11 +65,11 @@ setup(
 
     # This should be your name or the name of the organization which owns the
     # project.
-    author='Li-Mei Chiang',  # Optional
+    author='Li-Mei Chiang, Yi Hsiao',  # Optional
 
     # This should be a valid email address corresponding to the author listed
     # above.
-    author_email='dytk2134@gmail.com',  # Optional
+    author_email='dytk2134@gmail.com, hsiaoyi0504@gmail.com',  # Optional
 
     # Classifiers help users find your project by categorizing it.
     #
@@ -117,7 +117,13 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['numpy', 'gff3==0.3.0', 'bx-python==0.7.3', 'CrossMap', 'gff3tool'],  # Optional
+    install_requires=[
+        'numpy',
+        'gff3==0.3.0',
+        'bx-python==0.7.3',
+        'CrossMap',
+        'gff3tool'
+    ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
@@ -152,6 +158,12 @@ setup(
     #
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
+    scripts=[
+        'remap-gff3/bin/remap-gff3.py',
+        'remap-gff3/bin/get_remove_feature.py',
+        'remap-gff3/bin/gff_to_chain.py',
+        'remap-gff3/bin/re_construct_gff3_features.py'
+    ],
     entry_points={  # Optional
     },
 

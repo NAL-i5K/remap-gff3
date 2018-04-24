@@ -1,15 +1,19 @@
 # remap-gff3 : Python programs for updating gff3 coordinates to new assembly versions
+
 ## Background
+
 It is reasonable to expect that these assemblies will be updated, sometimes from entirely new data. A continuing problem is mapping existing datasets (in particular the manually curated annotations that we facilitate) to the new assemblies. For this purpose, we generate a workflow to update gff3 coordinates to new assembly versions.
 
 ## General Workflow
+
 1. Generate whole-genome alignment file.
     * For now, we will use NCBI's whole-genome alignments, available here: ftp://ftp.ncbi.nlm.nih.gov/pub/remap/
+
 2. Filter whole-genome alignment results based on quality criteria.
     * For now, we will focus on perfect alignments. 
     * Use NCBI's alignment results in gff3 format to filter out alignments with reciprocity=3 and pct_identity_gap=100
 3. Generate a chain file for coordinate remap program based on filtered alignment results.
-    * UCSC [chain format] (https://genome.ucsc.edu/goldenpath/help/chain.html)
+    * UCSC [chain format](https://genome.ucsc.edu/goldenpath/help/chain.html)
     * you can generate a chain file by using gff_to_chain.py
 4. Use CrossMap to update gff3 coordinates
     * [CrossMap](http://crossmap.sourceforge.net/)
@@ -22,6 +26,7 @@ It is reasonable to expect that these assemblies will be updated, sometimes from
     * get updated and removed GFF3 files
 
 ## Prerequisite
+
 * python2.7
 * Perl
 * gcc
@@ -34,31 +39,42 @@ It is reasonable to expect that these assemblies will be updated, sometimes from
 * gff3tool
 
 ## Installation
+
 There are two options for installing: directly from Github or Docker
 
 ### Install from Github
+
 1. `git clone https://github.com/NAL-i5K/remap-gff3.git`
-2. `python setup.py install`
+2. `cd remap-gff3`
+3. `pip install .`
 
 ### Docker
+
 #### Install Docker
+
 Follow [instructions](https://docs.docker.com/install/) to install Docker for your environment.
+
 #### Docker image
-For container deployment, you can build a image from a Dockerfile or get a pre-built image from DockerHub.  
-**Build a image from a Dockerfile**
+
+For container deployment, you can build a image from a Dockerfile or get a pre-built image from DockerHub.
+
+##### Build a image from a Dockerfile**
+
 1. `git clone https://github.com/NAL-i5K/remap-gff3.git`
 2. `cd remap-gff3`
 3. `docker build -t remap-gff3-image .`
-4. `docker run -itp 8000:8000 remap-gff3-image`  
-  
-**Get a pre-built image from DockerHub**
+4. `docker run -itp 8000:8000 remap-gff3-image`
+
+##### Get a pre-built image from DockerHub**
+
 1. `docker pull dytk2134/remap-gff3-image`
 2. `docker run -itp 8000:8000 dytk2134/remap-gff3-image`
 
 ## Troubleshooting
+
 Currently, `remap-gff3` has an installation issue becasue one of the fundamental dependency of `bx-python`. Therefore, before you start to use `remap-gff3`, make sure `CrossMap` is work using command: `CrossMap -h`.
 
-If you see `ImportError:  No module named bigwig_file`, please follow the steps  below to fix this problem.  
+If you see `ImportError:  No module named bigwig_file`, please follow the steps  below to fix this problem.
 
 ``` shell
 pip uninstall bx-python
@@ -67,15 +83,17 @@ pip install bx-python-0.7.3.tar.gz
 ```
 
 ## Quick Start
-* bin/remap-gff3.py
-```
+
+* remap-gff3.py
+
+``` shell
 usage: remap-gff3.py [-h] -a ALIGNMENT_FILE -t_fa TARGET_FASTA -q_fa
                      QUERY_FASTA -g INPUT_GFF [INPUT_GFF ...] [-tmp_ID]
                      [-chain CHAIN_FILE] [-tmp] [-u UPDATED_POSTFIX]
                      [-r REMOVED_POSTFIX] [-v]
 
 Quick start:
-python remap-gff3.py -a alignment.gff3 -t_fa target.fa -q_fa query.fa -tmp_ID -tmp -g A.gff3 B.gff3 C.gff3
+python remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -106,12 +124,18 @@ optional arguments:
 ```
 
 ## Additional Functionality
+
 ### generate file in UCSC chain format
-* bin/gff_to_chain.py
-    * Quick start: `python gff_to_chain.py -t_fa target.fasta -q_fa query.fasta -g example.gff3 -o chain.txt`
+
+* gff_to_chain.py
+  * Quick start: `gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -g alignment.gff3 -o chain.txt`
+
 ### re-construct missing features in gff3
-* bin/re_construct_gff3_deature.py
-    * Quick start: `python re_construct_gff3_deature.py -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt`
+
+* re_construct_gff3_deature.py
+  * Quick start: `re_construct_gff3_deature.py -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt`
+
 ### get removed features
-* bin/get_remove_feature.py
-    * Quick start: `python get_remove_feature.py -old_g old.gff3 -new_g new.gff3 -og remove_features_.gff3`
+
+* get_remove_feature.py
+  * Quick start: `get_remove_feature.py -old_g old.gff3 -new_g new.gff3 -og remove_features.gff3`
