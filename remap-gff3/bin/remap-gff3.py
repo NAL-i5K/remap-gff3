@@ -199,7 +199,7 @@ if __name__ == '__main__':
         # run gff3_fix
         update_gff = os.path.join(args.out_dir, '%s%s%s' % (gff3_filename, args.updated_postfix, gff3_extension))
         remove_gff = os.path.join(args.out_dir, '%s%s%s' % (gff3_filename, args.removed_postfix, gff3_extension))
-        update_gff_QC = os.path.join(args.out_dir, '%s_QC%s' % (gff3_filename, gff3_extension))
+        update_gff_QC = os.path.join(args.out_dir, '%s_QC%s' % (gff3_filename, '.txt'))
         logger.info('===== Run gff3_fix to correct GFF3 format errors =====')
         if args.tmp_identifier:
             tmp_update_gff = '%s/%s%s_tmp%s' % (temp_dir, os.path.basename(in_gff), args.updated_postfix, gff3_extension)
