@@ -118,9 +118,8 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'numpy',
-        'gff3==0.3.0',
-        'bx-python==0.7.3',
+        'gff3',
+
         'CrossMap',
         'gff3tool'
     ],  # Optional
