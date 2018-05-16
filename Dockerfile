@@ -22,5 +22,5 @@ RUN apt-get update && apt-get install --yes \
  WORKDIR /opt
  RUN git clone https://github.com/NAL-i5K/remap-gff3.git
  WORKDIR /opt/remap-gff3
- RUN pip install --upgrade pip && pip install \
+ RUN pip install \
   .
