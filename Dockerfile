@@ -13,11 +13,9 @@ RUN apt-get update && apt-get install --yes \
  libxml2-dev \
  libncurses5-dev \
  autotools-dev \
- git \
  perl \
  python \
- python-pip \
- python-dev
+ python-pip
 
  WORKDIR /opt
  RUN mkdir remap-gff3
