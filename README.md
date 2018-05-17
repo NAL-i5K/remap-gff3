@@ -10,7 +10,7 @@ It is reasonable to expect that genome assemblies will be updated, sometimes fro
     * For now, the i5k Workspace is using NCBI's whole-genome alignments, available here: ftp://ftp.ncbi.nlm.nih.gov/pub/remap/
 
 2. Filter whole-genome alignment results based on quality criteria.
-    * For now, we will focus on perfect alignments. 
+    * For now, we will focus on perfect alignments.
     * Use NCBI's alignment results in gff3 format to filter out alignments with reciprocity=3 and pct_identity_gap=100
 3. Generate a chain file for coordinate remap program based on filtered alignment results.
     * UCSC [chain format](https://genome.ucsc.edu/goldenpath/help/chain.html)
@@ -25,18 +25,17 @@ It is reasonable to expect that genome assemblies will be updated, sometimes fro
     * run gff3_fix to correct GFF3 format errors
     * get updated and removed GFF3 files
 
-## Prerequisite
+## Dependencies
 
 * python2.7
+    * Packages/Modules:
+        * CrossMap
+        * gff3
+        * gff3tool
 * Perl
-* gcc
-* numpy
-* cython
-* pysam
-* bx-python
-* CrossMap
-* gff3
-* gff3tool
+* zlib1g-dev
+* liblzo2-dev
+
 
 ## Installation
 
@@ -69,18 +68,6 @@ For container deployment, you can build a image from a Dockerfile or get a pre-b
 
 1. `docker pull dytk2134/remap-gff3-image`
 2. `docker run -itp 8000:8000 dytk2134/remap-gff3-image`
-
-## Troubleshooting
-
-Currently, `remap-gff3` has an installation issue becasue one of the fundamental dependency of `bx-python`. Therefore, before you start to use `remap-gff3`, make sure `CrossMap` is work using command: `CrossMap -h`.
-
-If you see `ImportError:  No module named bigwig_file`, please follow the steps  below to fix this problem.
-
-``` shell
-pip uninstall bx-python
-wget https://pypi.python.org/packages/55/db/fa76af59a03c88ad80494fc0df2948740bbd58cd3b3ed5c31319624687cc/bx-python-0.7.3.tar.gz
-pip install bx-python-0.7.3.tar.gz
-```
 
 ## Quick Start
 
