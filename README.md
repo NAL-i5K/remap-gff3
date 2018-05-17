@@ -2,19 +2,19 @@
 
 ## Background
 
-It is reasonable to expect that these assemblies will be updated, sometimes from entirely new data. A continuing problem is mapping existing datasets (in particular the manually curated annotations that we facilitate) to the new assemblies. For this purpose, we generate a workflow to update gff3 coordinates to new assembly versions.
+It is reasonable to expect that genome assemblies will be updated, sometimes from entirely new data. A continuing problem is mapping existing datasets - in particular the manually curated annotations that the i5k Workspace@NAL facilitates - to the new assemblies. For this purpose, we generate a workflow to update gff3 coordinates to new assembly versions. This workflow relies on existing services and programs - specifically, NCBI's whole-genome alignment service, and Crossmap - and packages them in a way that generates error-free gff3 models on the new assembly, for models that have 100% alignment between old and new assemblies.
 
 ## General Workflow
 
 1. Generate whole-genome alignment file.
-    * For now, we will use NCBI's whole-genome alignments, available here: ftp://ftp.ncbi.nlm.nih.gov/pub/remap/
+    * For now, the i5k Workspace is using NCBI's whole-genome alignments, available here: ftp://ftp.ncbi.nlm.nih.gov/pub/remap/
 
 2. Filter whole-genome alignment results based on quality criteria.
     * For now, we will focus on perfect alignments. 
     * Use NCBI's alignment results in gff3 format to filter out alignments with reciprocity=3 and pct_identity_gap=100
 3. Generate a chain file for coordinate remap program based on filtered alignment results.
     * UCSC [chain format](https://genome.ucsc.edu/goldenpath/help/chain.html)
-    * you can generate a chain file by using gff_to_chain.py
+    * Generate a chain file using gff_to_chain.py
 4. Use CrossMap to update gff3 coordinates
     * [CrossMap](http://crossmap.sourceforge.net/)
 5. Post-process the output from CrossMap
