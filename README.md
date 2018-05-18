@@ -62,7 +62,7 @@ For container deployment, you can build a image from a Dockerfile or get a pre-b
 1. `git clone https://github.com/NAL-i5K/remap-gff3.git`
 2. `cd remap-gff3`
 3. `docker build -t remap-gff3-image .`
-4. `docker run -itp 8000:8000 remap-gff3-image`
+4. `docker run -it remap-gff3-image`
 
 ##### Get a pre-built image from DockerHub
 
