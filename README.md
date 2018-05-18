@@ -67,7 +67,7 @@ For container deployment, you can build a image from a Dockerfile or get a pre-b
 ##### Get a pre-built image from DockerHub
 
 1. `docker pull dytk2134/remap-gff3-image`
-2. `docker run -itp 8000:8000 dytk2134/remap-gff3-image`
+2. `docker run -it dytk2134/remap-gff3-image`
 
 ## Quick Start
 
