@@ -17,10 +17,11 @@ RUN apt-get update && apt-get install --yes \
  perl \
  python \
  python-pip \
- python-dev
+ python-dev \
+ dos2unix
 
  WORKDIR /opt
  RUN mkdir remap-gff3
- ADD . /opt/remap-gff3/
+ COPY . /opt/remap-gff3/
  WORKDIR /opt/remap-gff3
- RUN pip install .
+ RUN find . -type f -print0 | xargs -0 dos2unix && pip install .
