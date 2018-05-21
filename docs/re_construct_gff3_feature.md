@@ -58,7 +58,7 @@ optional arguments:
   -re RE_CONSTRUCT_FEATURES, --re_construct_features RE_CONSTRUCT_FEATURES
                         output re-construct features
   -tmp_ID, --tmp_identifier
-                        Use unique temporary identifier (tmp_identifier attribute) as identifier. (Default: use ID attribute). (Default: False)
+                        Use unique temporary identifier (tmp_identifier attribute) as identifier. (Default: use ID attribute).
   -v, --version         show program's version number and exit
 ```
 
