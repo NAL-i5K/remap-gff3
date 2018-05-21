@@ -116,13 +116,17 @@ optional arguments:
 
 * gff_to_chain.py
   * Quick start: `gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -g alignment.gff3 -o chain.txt`
+  * [Full documentation](docs/gff_to_chain.md)
 
 ### re-construct missing features in gff3
 
 * re_construct_gff3_deature.py
   * Quick start: `re_construct_gff3_deature.py -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt`
+  * [Full documentation](docs/re_construct_gff3_deature.md)
 
 ### get removed features
 
 * get_remove_feature.py
   * Quick start: `get_remove_feature.py -old_g old.gff3 -new_g new.gff3 -og remove_features.gff3`
+  * [Full documentation](docs/get_remove_feature.md)
+

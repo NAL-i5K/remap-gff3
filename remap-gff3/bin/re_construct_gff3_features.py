@@ -297,7 +297,7 @@ if __name__ == '__main__':
     parser.add_argument('-new_g', '--new_gff', type=str, help='The updated  gff3 file', required=True)
     parser.add_argument('-og', '--output_gff', type=str, help='output re-construct gff3 file', required=True)
     parser.add_argument('-re', '--re_construct_features', type=str, help='output re-construct features')
-    parser.add_argument('-tmp_ID', '--tmp_identifier', action="store_true", help='Generate a unique temporary identifier for all the feature in the input gff3 files. (Default: False)', default=False)
+    parser.add_argument('-tmp_ID', '--tmp_identifier', action="store_true", help='Use unique temporary identifier (tmp_identifier attribute) as identifier. (Default: use ID attribute).', default=False)
     parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
 
     args = parser.parse_args()
