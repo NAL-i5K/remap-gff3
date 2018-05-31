@@ -110,6 +110,34 @@ def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_fil
                                 out_f.write(line + '\n')
     out_f.close()
 
+def query_yes_no(question, default='no'):
+    # Ask a yes/no question via raw_input() and return their answer.
+    valid = {
+        "yes": True,
+        "y": True,
+        "ye": True,
+        "no": False,
+        "n": False
+    }
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+
+    while True:
+        sys.stdout.write(question + prompt)
+        choice = raw_input().lower()
+        if default is not None and choice == '':
+            return valid[default]
+        elif choice in valid:
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' "
+                             "(or 'y' or 'n').\n")
 
 if __name__ == '__main__':
     import argparse
@@ -189,13 +217,27 @@ if __name__ == '__main__':
         logger.info('===== Run gff3_QC to generate QC report for re-constructed gff3 file =====')
         re_construct_QC = '%s/%s_re_construct_QC.report' % (temp_dir, gff3_filename)
         subprocess.Popen(['gff3_QC', '-g', re_construct_file, '-f', args.query_fasta, '-o', re_construct_QC]).wait()
+        # review QC report
+        re_construct_QC_filtered = re_construct_QC
+        if query_yes_no('Review the QC report before running gff3_fix?'):
+            sys.stderr.write('Please input the path of the reviewed QC report: ')
+            re_construct_QC_filtered = raw_input().strip()
+            while True:
+                if not os.path.exists(re_construct_QC_filtered):
+                    logger.error('The QC report: %s is not exist.' % (re_construct_QC_filtered))
+                    sys.stderr.write('Please input the path of the reviewed QC report: ')
+                    re_construct_QC_filtered = raw_input().strip()
+                else:
+                    break
+
         # remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
-        re_construct_QC_filtered = '%s/%s_re_construct_QC_filtered.report' % (temp_dir, gff3_filename)
-        log_file = open(re_construct_QC_filtered, 'w')
-        proc1 = subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC], stdout=subprocess.PIPE)
-        subprocess.Popen(['grep', '-v', '\'Ema0009\''], stdin=proc1.stdout, stdout=log_file).wait()
-        log_file.close()
+        #re_construct_QC_filtered = '%s/%s_re_construct_QC_filtered.report' % (temp_dir, gff3_filename)
+        #log_file = open(re_construct_QC_filtered, 'w')
+        #proc1 = subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC], stdout=subprocess.PIPE)
+        #subprocess.Popen(['grep', '-v', '\'Ema0009\''], stdin=proc1.stdout, stdout=log_file).wait()
+        #log_file.close()
         rm_tmp_list.extend([CrossMap_mapped_file, CrossMap_mapped_file + '.unmap',CrossMap_log_file, filtered_file, re_construct_file, re_construct_report, re_construct_QC, re_construct_QC_filtered])
+
         # run gff3_fix
         update_gff = os.path.join(args.out_dir, '%s%s%s' % (gff3_filename, args.updated_postfix, gff3_extension))
         remove_gff = os.path.join(args.out_dir, '%s%s%s' % (gff3_filename, args.removed_postfix, gff3_extension))
@@ -214,7 +256,8 @@ if __name__ == '__main__':
         subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
     if args.temp:
         for rmfile in rm_tmp_list:
-            os.remove(rmfile)
+            if os.path.exists(rmfile):
+                os.remove(rmfile)
         try:
             os.rmdir(temp_dir)
         except OSError:
