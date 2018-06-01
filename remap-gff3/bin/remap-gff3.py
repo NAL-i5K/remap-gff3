@@ -229,6 +229,8 @@ if __name__ == '__main__':
                     re_construct_QC_filtered = raw_input().strip()
                 else:
                     break
+        else:
+            rm_tmp_list.append(re_construct_QC_filtered)
 
         # remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
         #re_construct_QC_filtered = '%s/%s_re_construct_QC_filtered.report' % (temp_dir, gff3_filename)
@@ -236,7 +238,7 @@ if __name__ == '__main__':
         #proc1 = subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC], stdout=subprocess.PIPE)
         #subprocess.Popen(['grep', '-v', '\'Ema0009\''], stdin=proc1.stdout, stdout=log_file).wait()
         #log_file.close()
-        rm_tmp_list.extend([CrossMap_mapped_file, CrossMap_mapped_file + '.unmap',CrossMap_log_file, filtered_file, re_construct_file, re_construct_report, re_construct_QC, re_construct_QC_filtered])
+        rm_tmp_list.extend([CrossMap_mapped_file, CrossMap_mapped_file + '.unmap',CrossMap_log_file, filtered_file, re_construct_file, re_construct_report, re_construct_QC])
 
         # run gff3_fix
         update_gff = os.path.join(args.out_dir, '%s%s%s' % (gff3_filename, args.updated_postfix, gff3_extension))
