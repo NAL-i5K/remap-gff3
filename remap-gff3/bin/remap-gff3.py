@@ -213,6 +213,7 @@ if __name__ == '__main__':
             subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff]).wait()
             get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
         logger.info('===== Get updated and removed GFF3 files =====')
+        logger.info('===== Run gff3_QC to generate QC report for updated GFF3 files =====')
         subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
     if args.temp:
         for rmfile in rm_tmp_list:

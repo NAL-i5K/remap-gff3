@@ -21,9 +21,16 @@ It is reasonable to expect that genome assemblies will be updated, sometimes fro
     * remove all the not exact match features from the CrossMap output
     * re-construct the parent features for the models where all child features are perfectly re-mapped, but the parents aren't
     * run gff3_QC to generate QC report for re-constructed gff3 file
-        * For now, we will remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report, and then run gff3_fix to correct format errors.
+        * To clean up errors that happen after model reconstruction, we will only fix the following errors in the QC report:
+            * Ema0001: Parent feature start and end coordinates exceed those of child features
+            * Ema0003: This feature is not contained within the parent feature coordinates
+            * Ema0006: Wrong phase
+            * Ema0007: CDS and parent feature on different strands
+            * Emr0001: Duplicate transcript found
+            * Esf0014: ##gff-version" missing from the first line
     * run gff3_fix to correct GFF3 format errors
     * get updated and removed GFF3 files
+    * run gff3_QC to generate QC report for updated GFF3 files
 
 ## Dependencies
 
