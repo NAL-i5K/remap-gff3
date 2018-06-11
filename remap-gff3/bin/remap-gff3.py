@@ -189,11 +189,13 @@ if __name__ == '__main__':
         logger.info('===== Run gff3_QC to generate QC report for re-constructed gff3 file =====')
         re_construct_QC = '%s/%s_re_construct_QC.report' % (temp_dir, gff3_filename)
         subprocess.Popen(['gff3_QC', '-g', re_construct_file, '-f', args.query_fasta, '-o', re_construct_QC]).wait()
-        # remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report
+        # list of errors
+        # only fix the errors in the list
+        fix_errors = ['Ema0001', 'Ema0003', 'Ema0006', 'Ema0007', 'Emr0001', 'Esf0014']
         re_construct_QC_filtered = '%s/%s_re_construct_QC_filtered.report' % (temp_dir, gff3_filename)
         log_file = open(re_construct_QC_filtered, 'w')
-        proc1 = subprocess.Popen(['grep', '-v' ,'\'Emr0002\'', re_construct_QC], stdout=subprocess.PIPE)
-        subprocess.Popen(['grep', '-v', '\'Ema0009\''], stdin=proc1.stdout, stdout=log_file).wait()
+        pattern = 'NR==1 || /%s/ {print}'% ('/ || /'.join(fix_errors))
+        subprocess.Popen(['awk', pattern, re_construct_QC], stdout=log_file).wait()
         log_file.close()
         rm_tmp_list.extend([CrossMap_mapped_file, CrossMap_mapped_file + '.unmap',CrossMap_log_file, filtered_file, re_construct_file, re_construct_report, re_construct_QC, re_construct_QC_filtered])
         # run gff3_fix
@@ -211,6 +213,7 @@ if __name__ == '__main__':
             subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff]).wait()
             get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
         logger.info('===== Get updated and removed GFF3 files =====')
+        logger.info('===== Run gff3_QC to generate QC report for updated GFF3 files =====')
         subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
     if args.temp:
         for rmfile in rm_tmp_list:
