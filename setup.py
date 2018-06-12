@@ -65,11 +65,11 @@ setup(
 
     # This should be your name or the name of the organization which owns the
     # project.
-    author='Li-Mei Chiang, Yi Hsiao',  # Optional
+    author='NAL i5k workspace',  # Optional
 
     # This should be a valid email address corresponding to the author listed
     # above.
-    author_email='dytk2134@gmail.com, hsiaoyi0504@gmail.com',  # Optional
+    author_email='i5k@ars.usda.gov',  # Optional
 
     # Classifiers help users find your project by categorizing it.
     #

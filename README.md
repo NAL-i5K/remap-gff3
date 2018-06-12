@@ -21,9 +21,16 @@ It is reasonable to expect that genome assemblies will be updated, sometimes fro
     * remove all the not exact match features from the CrossMap output
     * re-construct the parent features for the models where all child features are perfectly re-mapped, but the parents aren't
     * run gff3_QC to generate QC report for re-constructed gff3 file
-        * For now, we will remove all the incorrectly merged gene parents (Ema0009) and incorrectly split parents (Emr0002) from QC report, and then run gff3_fix to correct format errors.
+        * To clean up errors that happen after model reconstruction, we will only fix the following errors in the QC report:
+            * Ema0001: Parent feature start and end coordinates exceed those of child features
+            * Ema0003: This feature is not contained within the parent feature coordinates
+            * Ema0006: Wrong phase
+            * Ema0007: CDS and parent feature on different strands
+            * Emr0001: Duplicate transcript found
+            * Esf0014: ##gff-version" missing from the first line
     * run gff3_fix to correct GFF3 format errors
     * get updated and removed GFF3 files
+    * run gff3_QC to generate QC report for updated GFF3 files
 
 ## Dependencies
 
@@ -47,6 +54,10 @@ There are two options for installing: directly from Github or Docker
 2. `cd remap-gff3`
 3. `pip install .`
 
+#### Troubleshooting
+
+If you install `remap-gff3` locally(e.g. `pip install . --user`), please make sure the **~/.local/bin** is in your **$PATH**.
+
 ### Docker
 
 #### Install Docker
@@ -62,12 +73,12 @@ For container deployment, you can build a image from a Dockerfile or get a pre-b
 1. `git clone https://github.com/NAL-i5K/remap-gff3.git`
 2. `cd remap-gff3`
 3. `docker build -t remap-gff3-image .`
-4. `docker run -itp 8000:8000 remap-gff3-image`
+4. `docker run -it remap-gff3-image`
 
 ##### Get a pre-built image from DockerHub
 
 1. `docker pull dytk2134/remap-gff3-image`
-2. `docker run -itp 8000:8000 dytk2134/remap-gff3-image`
+2. `docker run -it dytk2134/remap-gff3-image`
 
 ## Quick Start
 
@@ -80,7 +91,7 @@ usage: remap-gff3.py [-h] -a ALIGNMENT_FILE -t_fa TARGET_FASTA -q_fa
                      [-r REMOVED_POSTFIX] [-v]
 
 Quick start:
-python remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3
+remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -116,13 +127,17 @@ optional arguments:
 
 * gff_to_chain.py
   * Quick start: `gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -g alignment.gff3 -o chain.txt`
+  * [Full documentation](docs/gff_to_chain.md)
 
 ### re-construct missing features in gff3
 
-* re_construct_gff3_deature.py
-  * Quick start: `re_construct_gff3_deature.py -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt`
+* re_construct_gff3_feature.py
+  * Quick start: `re_construct_gff3_feature.py -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt`
+  * [Full documentation](docs/re_construct_gff3_feature.md)
 
 ### get removed features
 
 * get_remove_feature.py
   * Quick start: `get_remove_feature.py -old_g old.gff3 -new_g new.gff3 -og remove_features.gff3`
+  * [Full documentation](docs/get_remove_feature.md)
+

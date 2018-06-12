@@ -152,12 +152,13 @@ def re_construct(old_gff3, new_gff3, tmp_identifier=False, report=None):
             new_children = new_parentID_dict[parent_ID]
             old_children = old_parentID_dict[parent_ID]
             if len(new_children) == len(old_children):
-                # all child feature are prefectly re-mapped, byt the oarents aren't
+                # all child feature are prefectly re-mapped, but the parents aren't
                 # get parent information from original gff3 file
                 try:
                     old_features = old_gff3.features[parent_ID]
                 except KeyError:
                     old_features = []
+                # the ID of a parent feature should be unique
                 if len(old_features) == 1:
                     newparent = copy.deepcopy(old_features[0])
                     # clean old child feature and update the child's parent list
@@ -206,6 +207,7 @@ def re_construct(old_gff3, new_gff3, tmp_identifier=False, report=None):
                         newparent['strand'] = list(strand_set)[0]
                         newparent['start'] = min(cPos)
                         newparent['end'] = max(cPos)
+                        newparent['children'] = sorted(newparent['children'], key=lambda x: (x['line_index']))
                         newparent['parents'] = []
                         try:
                             for parent in newparent['attributes']['Parent']:
@@ -261,11 +263,14 @@ def write_gff3(gff3, out_f):
                     root_feature = [root]
                 for line_data in root_feature:
                     write_features(line_data, out_gff)
+                    wrote_lines.add(line_data['line_index'])
                 descendants = gff3.descendants(root)
+
                 for descendant in descendants:
                     if descendant['line_index'] in wrote_lines:
                         continue
                     write_features(descendant, out_gff)
+                    wrote_lines.add(descendant['line_index'])
 def main(old_gff, new_gff, output_gff, re_construct_features, tmp_identifier):
     logger.info('Reading original GFF3 file: (%s)...\n', old_gff)
     old_gff3 = Gff3(gff_file=old_gff)
@@ -290,14 +295,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
 
     Quick start:
-    python2.7 %(prog)s -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt
+    %(prog)s -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt
     """))
 
     parser.add_argument('-old_g', '--old_gff', type=str, help='The original gff3 file', required=True)
     parser.add_argument('-new_g', '--new_gff', type=str, help='The updated  gff3 file', required=True)
     parser.add_argument('-og', '--output_gff', type=str, help='output re-construct gff3 file', required=True)
     parser.add_argument('-re', '--re_construct_features', type=str, help='output re-construct features')
-    parser.add_argument('-tmp_ID', '--tmp_identifier', action="store_true", help='Generate a unique temporary identifier for all the feature in the input gff3 files. (Default: False)', default=False)
+    parser.add_argument('-tmp_ID', '--tmp_identifier', action="store_true", help='Use unique temporary identifier (tmp_identifier attribute) as identifier. (Default: use ID attribute).', default=False)
     parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
 
     args = parser.parse_args()
