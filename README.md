@@ -54,6 +54,10 @@ There are two options for installing: directly from Github or Docker
 2. `cd remap-gff3`
 3. `pip install .`
 
+#### Troubleshooting
+
+If you install `remap-gff3` locally(e.g. `pip install . --user`), please make sure the **~/.local/bin** is in your **$PATH**.
+
 ### Docker
 
 #### Install Docker
