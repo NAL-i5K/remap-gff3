@@ -1,0 +1,15 @@
+sudo: required
+os: linux
+language: python
+python: 2.7
+
+install:
+  - sudo apt-get install liblzo2-dev
+  - sudo apt-get install zlib1g-dev
+  - pip install .
+
+script:
+  - remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3
+  - gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -a example_file/alignment.gff3 -o chain.txt
+  - re_construct_gff3_features.py -old_g example_file/example1.gff3 -new_g example_file/example1_CrossMap_filtered.gff3 -og example1_re_construct.gff3 -re report.txt
+  - get_remove_feature.py -old_g example_file/example1.gff3 -new_g example_file/example1_updated.gff3 -og example1_removed.gff3
