@@ -131,8 +131,8 @@ optional arguments:
 
 ### re-construct missing features in gff3
 
-* re_construct_gff3_feature.py
-  * Quick start: `re_construct_gff3_feature.py -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt`
+* re_construct_gff3_features.py
+  * Quick start: `re_construct_gff3_features.py -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt`
   * [Full documentation](docs/re_construct_gff3_feature.md)
 
 ### get removed features
