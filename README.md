@@ -126,7 +126,7 @@ optional arguments:
 ### generate file in UCSC chain format
 
 * gff_to_chain.py
-  * Quick start: `gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -g alignment.gff3 -o chain.txt`
+  * Quick start: `gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -a alignment.gff3 -o chain.txt`
   * [Full documentation](docs/gff_to_chain.md)
 
 ### re-construct missing features in gff3
