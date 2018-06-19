@@ -71,7 +71,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
 
     Quick start:
-    %(prog)s -old_g old.gff3 -new_g new.gff3 -og remove_features_.gff3
+    %(prog)s -old_g example_file/example1.gff3 -new_g example_file/example1_updated.gff3 -og example1_removed.gff3
     """))
 
     parser.add_argument('-old_g', '--old_gff', type=str, help='The original gff3 file', required=True)

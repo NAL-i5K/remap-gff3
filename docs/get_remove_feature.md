@@ -16,7 +16,7 @@ usage: get_remove_feature.py [-h] -old_g OLD_GFF -new_g NEW_GFF -og OUTPUT_GFF
                              [-tmp_ID] [-v]
 
 Quick start:
-python get_remove_feature.py -old_g old.gff3 -new_g new.gff3 -og remove_features_.gff3
+get_remove_feature.py -old_g example_file/example1.gff3 -new_g example_file/example1_updated.gff3 -og example1_removed.gff3
 
 optional arguments:
   -h, --help            show this help message and exit
