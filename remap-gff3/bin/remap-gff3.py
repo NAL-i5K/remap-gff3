@@ -78,7 +78,7 @@ def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_fil
                             if attribute_dict['ID'] in ID_set:
                                 logger.error('All features should have an unique ID. Please run the command with -tmp_ID.')
                                 sys.exit(0)
-                            elif not 'not exact match' in match_state:
+                            elif 'not exact match' not in match_state:
                                 ID_set.add(attribute_dict['ID'])
                     except KeyError:
                         logger.error('All features should have an unique ID. Please run the command with -tmp_ID.')
