@@ -284,6 +284,7 @@ def main(old_gff, new_gff, output_gff, re_construct_features, tmp_identifier):
         out_f = None
     polypeptide_re_construct(old_gff3=old_gff3, new_gff3=new_gff3, tmp_identifier=tmp_identifier, report=out_f)
     re_construct(old_gff3=old_gff3, new_gff3=new_gff3, tmp_identifier=tmp_identifier, report=out_f)
+    logger.info('Generating the re-constructed gff3 file: (%s)...\n', output_gff)
     write_gff3(new_gff3, output_gff)
 
     if re_construct_features:
@@ -295,7 +296,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
 
     Quick start:
-    %(prog)s -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt
+    %(prog)s -old_g example_file/example1.gff3 -new_g example_file/example1_CrossMap_filtered.gff3 -og example1_re_construct.gff3 -re report.txt
     """))
 
     parser.add_argument('-old_g', '--old_gff', type=str, help='The original gff3 file', required=True)

@@ -126,18 +126,18 @@ optional arguments:
 ### generate file in UCSC chain format
 
 * gff_to_chain.py
-  * Quick start: `gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -a alignment.gff3 -o chain.txt`
+  * Quick start: `gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -a example_file/alignment.gff3 -o chain.txt`
   * [Full documentation](docs/gff_to_chain.md)
 
 ### re-construct missing features in gff3
 
 * re_construct_gff3_features.py
-  * Quick start: `re_construct_gff3_features.py -old_g old.gff3 -new_g new.gff3 -og re_construct.gff3 -re report.txt`
+  * Quick start: `re_construct_gff3_features.py -old_g example_file/example1.gff3 -new_g example_file/example1_CrossMap_filtered.gff3 -og example1_re_construct.gff3 -re report.txt`
   * [Full documentation](docs/re_construct_gff3_features.md)
 
 ### get removed features
 
 * get_remove_feature.py
-  * Quick start: `get_remove_feature.py -old_g old.gff3 -new_g new.gff3 -og remove_features.gff3`
+  * Quick start: `get_remove_feature.py -old_g example_file/example1.gff3 -new_g example_file/example1_updated.gff3 -og example1_removed.gff3`
   * [Full documentation](docs/get_remove_feature.md)
 

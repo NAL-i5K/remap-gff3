@@ -47,7 +47,7 @@ usage: gff_to_chain.py [-h] -a ALIGNMENT_FILE -t_fa TARGET_FASTA -q_fa
                        QUERY_FASTA -o OUTPUT [-v]
 
 Quick start:
-python gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -g alignment.gff3 -o chain.txt
+gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -a example_file/alignment.gff3 -o chain.txt
 
 optional arguments:
   -h, --help            show this help message and exit
