@@ -110,6 +110,83 @@ def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_fil
                                 out_f.write(line + '\n')
     out_f.close()
 
+def get_summary(update_gff, remove_gff, summary_report, removed_list):
+    # summary_dict = {'gene': {'Feature_type': 'gene','Original_count':100, 'New_count': 90, 'Retained(%)': 90}}
+    summary_dict = dict()
+    type_order = list()
+    with open(update_gff, 'r') as in_gff:
+        for line in in_gff:
+            line = line.strip()
+            if len(line) != 0:
+                if line[0] != '#':
+                    token = line.split("\t")
+                    # type
+                    if token[2] not in summary_dict:
+                        type_order.append(token[2])
+                        summary_dict[token[2]] = {
+                            'Feature_type': token[2],
+                            'Original_count': 0,
+                            'New_count': 0,
+                            'Retained(%)': 0
+                        }
+                    summary_dict[token[2]]['Original_count'] += 1
+                    summary_dict[token[2]]['New_count'] += 1
+    # removed = [{'type': 'gene', 'ID': 'MODEL0000001', 'Name': 'MODEL', 'owner': 'i5k'}]
+    # list of dict
+    removed = list()
+    with open(remove_gff, 'r') as in_gff:
+        for line in in_gff:
+            line = line.strip()
+            if len(line) != 0:
+                if line[0] != '#':
+                    token = line.split("\t")
+                    attribute_dict = dict(re.findall('([^=;]+)=([^=;\n]+)', token[8]))
+                    # type
+                    if token[2] not in summary_dict:
+                        type_order.append(token[2])
+                        summary_dict[token[2]] = {
+                            'Feature_type': token[2],
+                            'Original_count': 0,
+                            'New_count': 0,
+                            'Retained(%)': 0
+                        }
+                    summary_dict[token[2]]['Original_count'] += 1
+                    remove_dict = {
+                        'type': token[2],
+                        'ID': 'NA',
+                        'Name': 'NA',
+                        'owner': 'NA'
+                    }
+                    if 'ID' in attribute_dict:
+                        remove_dict['ID'] = attribute_dict['ID']
+                    if 'Name' in attribute_dict:
+                        remove_dict['Name'] = attribute_dict['Name']
+                    if 'owner' in attribute_dict:
+                        remove_dict['owner'] = attribute_dict['owner']
+                    removed.append(remove_dict)
+    # calculate % retained 
+    for feature_type in summary_dict:
+        Retained = 100 * float(summary_dict[feature_type]['New_count'])/float(summary_dict[feature_type]['Original_count'])
+        summary_dict[feature_type]['Retained(%)'] = '%.2f%%' % Retained
+
+    with open(summary_report, 'w') as out_f:
+        header = ['Feature_type', 'Original_count', 'New_count', 'Retained(%)']
+        # write out header
+        outline = '\t'.join(header)
+        out_f.write(outline + '\n')
+        for feature_type in type_order:
+            values = [str(summary_dict[feature_type][key]) for key in header]
+            outline = '\t'.join(values)
+            out_f.write(outline + '\n')
+    with open(removed_list, 'w') as out_f:
+        header = ['type', 'ID', 'Name', 'owner']
+        outline = '\t'.join(header)
+        out_f.write(outline + '\n')
+        for rm in removed:
+            values = [rm[key] for key in header]
+            outline = '\t'.join(values)
+            out_f.write(outline + '\n')
+
 
 if __name__ == '__main__':
     import argparse
@@ -128,6 +205,7 @@ if __name__ == '__main__':
     parser.add_argument('-dir', '--out_dir', type=str, help='Output directory', required=True)
     parser.add_argument('-g', '--input_gff', nargs='+', type=str, help='List one or more GFF3 files to be updated.', required=True)
     parser.add_argument('-tmp_ID', '--tmp_identifier', action="store_true", help='Generate a unique temporary identifier for all the feature in the input gff3 files. (Default: False)', default=False)
+    parser.add_argument('-summary', '--summary_report', action="store_true", help='Generate a document that summarizes the change in feature types after remapping and lists the removed features',default=False)
     parser.add_argument('-chain', '--chain_file', type=str, help='Input a ready-made chain file.')
     parser.add_argument('-tmp', '--temp', action="store_false", help='Store all the intermediate files/temporary files into [alignment_filename]_tmp/ directory. (Default: False)')
     parser.add_argument('-u', '--updated_postfix', default='_updated', help='The filename postfix for updated features (default: "_updated")')
@@ -213,8 +291,14 @@ if __name__ == '__main__':
             subprocess.Popen(['gff3_fix', '-qc_r', re_construct_QC_filtered, '-g', re_construct_file, '-og', update_gff]).wait()
             get_remove_feature.output_remove_features(in_gff, update_gff, remove_gff, tmp_identifier)
         logger.info('===== Get updated and removed GFF3 files =====')
+        if args.summary_report:
+            logger.info('===== Generate a summary report =====')
+            summary_report = os.path.join(args.out_dir, '%s%s' % (gff3_filename, '_summary.tsv'))
+            removed_list = os.path.join(args.out_dir, '%s%s' % (gff3_filename, '_removed.tsv'))
+            get_summary(update_gff, remove_gff, summary_report, removed_list)
         logger.info('===== Run gff3_QC to generate QC report for updated GFF3 files =====')
         subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
+        
     if args.temp:
         for rmfile in rm_tmp_list:
             os.remove(rmfile)
