@@ -35,8 +35,11 @@ matrix:
     - docker run remap-gff3 get_remove_feature.py -old_g example_file/example1.gff3
       -new_g example_file/example1_updated.gff3 -og example1_removed.gff3
     env: version=docker
-    after_success:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker tag remap-gff3 nali5k/remap-gff3
-    - docker push nali5k/remap-gff3
+    deploy:
+      provider: script
+      script: bash docker_push.sh
+      on:
+        branch:
+          - master
+          - add_travis
     secure: CzXysK7fGAC5xRrQF3uhpmsFQRrU+iKHz04Z/Dpfr0qeTz6iT7B1IYOgoAIA/kdX4Jrck0coZDujYbuiT6WBoOeyUtwVtk7p/9De4/deXRXt25/7OEJATXcomHvfu+ocfzGm8l0ScVQFE5tdIi2e+QSXZCv/CGEsL8BzlJlUW2r3w6VNmEUas+g87w9gLV1njpS1UpL8yoXYVgUqG1597wO4CUOU3UWC7Y6qk14Ql6vBNXrKLMZ+jGujg1NROQR9Igs4oBwyzwISOSAg0cbpMNJkTAopTvZQEjMa3T0aPxdy8vU5P7QKoKXgxZPMYhLcLbC5lPe7rfNjoMe9w7USP2a3gIz6q/xLQApJK9XrF9VC2P/vCopdqqyH6M07mmzIZKPGZfOSIqx/jsoXvcUR4/A8h8JBD0PSQ8XhSJU2AjjYmV4BFw2Q3laFfenc71iCCMYnSF6Qn9apwSeDxiUROeg/5xYCECIH7voO0nopuN74YWrvKIxH8l1v11SOflF3xRVzrIsOgzrQe8wlalmQtCSEEalWx4CulTEiMBwPHPMAyAOU/a3MOA5tk6/S/3PJxEboPJpVD8+4E7wuUGaPxxDb5pincEDF8HO+YUK8Yqmy74z2QzeI94ROo8uZK1N/PQrjilUqb9jHqOOf0iyaGHwj6TS2a0SwBGTp3I6r1Yk=
