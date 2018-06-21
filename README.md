@@ -30,6 +30,7 @@ It is reasonable to expect that genome assemblies will be updated, sometimes fro
             * Esf0014: ##gff-version" missing from the first line
     * run gff3_fix to correct GFF3 format errors
     * get updated and removed GFF3 files
+    * generate a summary report and a list of removed features
     * run gff3_QC to generate QC report for updated GFF3 files
 
 ## Dependencies
@@ -108,6 +109,10 @@ optional arguments:
   -tmp_ID, --tmp_identifier
                         Generate a unique temporary identifier for all the
                         feature in the input gff3 files. (Default: False)
+  -summary, --summary_report
+                        Generate a document that summarizes the change in 
+                        feature types after remapping and lists the removed 
+                        features
   -chain CHAIN_FILE, --chain_file CHAIN_FILE
                         Input a ready-made chain file.
   -tmp, --temp          Store all the intermediate files/temporary files into
