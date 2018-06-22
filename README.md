@@ -1,5 +1,7 @@
 # remap-gff3 : Python programs for updating gff3 coordinates to new assembly versions
 
+[![Build Status](https://travis-ci.org/NAL-i5K/remap-gff3.svg?branch=master)](https://travis-ci.org/NAL-i5K/remap-gff3)
+
 ## Background
 
 It is reasonable to expect that genome assemblies will be updated, sometimes from entirely new data. A continuing problem is mapping existing datasets to the new assemblies. For this purpose, we generate a workflow to update gff3 coordinates to new assembly versions, tailored towards the manually curated annotations that the i5k Workspace@NAL facilitates. This workflow relies on existing services and programs - specifically, NCBI's whole-genome alignment service, and Crossmap - and packages them in a way that generates error-free gff3 models on the new assembly, for models that have 100% alignment between old and new assemblies.
