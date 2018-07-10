@@ -73,7 +73,7 @@ def main(alignment_file, target, query, output):
                     tokens = line.split('\t')
                     attribute = dict(re.findall('([^=;]+)=([^=;\n]+)', tokens[8]))
                     # focus on prefect alignments
-                    if attribute['reciprocity'] != '3' and attribute['pct_identity_gap'] != '100':
+                    if attribute['reciprocity'] != '3' or attribute['pct_identity_gap'] != '100':
                         removed_alignments += 1
                         continue
                     Target = attribute['Target'].split(' ')
