@@ -120,7 +120,7 @@ setup(
     install_requires=[
         'gff3==0.3.0',
         'CrossMap==0.2.7',
-        'gff3tool==1.3.0'
+        'gff3tool==1.4.0'
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
