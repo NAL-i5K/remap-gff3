@@ -53,9 +53,7 @@ There are two options for installing: directly from Github or Docker
 
 ### Install from Github
 
-1. `git clone https://github.com/NAL-i5K/remap-gff3.git`
-2. `cd remap-gff3`
-3. `pip install .`
+`pip install git+https://github.com/NAL-i5K/remap-gff3.git`
 
 #### Troubleshooting
 
