@@ -164,7 +164,7 @@ def get_summary(update_gff, remove_gff, summary_report, removed_list):
                     if 'owner' in attribute_dict:
                         remove_dict['owner'] = attribute_dict['owner']
                     removed.append(remove_dict)
-    # calculate % retained 
+    # calculate % retained
     for feature_type in summary_dict:
         Retained = 100 * float(summary_dict[feature_type]['New_count'])/float(summary_dict[feature_type]['Original_count'])
         summary_dict[feature_type]['Retained(%)'] = '%.2f%%' % Retained
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     %(prog)s -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3
     """))
 
-    parser.add_argument('-a', '--alignment_file', type=str, help='NCBI\'s whole-genome alignments(gff3 format).', required=True)
+    parser.add_argument('-a', '--alignment_file', type=str, help='NCBI\'s whole-genome alignments(gff3 format).')
     parser.add_argument('-t_fa', '--target_fasta', type=str, help='Target genome assembly', required=True)
     parser.add_argument('-q_fa', '--query_fasta', type=str, help='Query genome assembly', required=True)
     parser.add_argument('-dir', '--out_dir', type=str, help='Output directory', required=True)
@@ -216,7 +216,14 @@ if __name__ == '__main__':
 
     if not os.path.exists(args.out_dir):
         os.makedirs(args.out_dir)
-    temp_dir_name = '%s_%s' % (os.path.splitext(os.path.basename(args.alignment_file))[0], 'tmp')
+    if args.alignment_file:
+        temp_dir_name = '%s_%s' % (os.path.splitext(os.path.basename(args.alignment_file))[0], 'tmp')
+    elif args.chain_file:
+        temp_dir_name = '%s_%s' % (os.path.splitext(os.path.basename(args.chain_file))[0], 'tmp')
+    else:
+        logger.error('please specify NCBI\'s whole-genome alignment file with -a or input a ready-made chain file with -chain.')
+        sys.exit(0)
+
     temp_dir = os.path.join(args.out_dir, temp_dir_name)
     rm_tmp_list = []
 
