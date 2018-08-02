@@ -217,6 +217,10 @@ polypeptide     HAZT001062-PA           NA              NA
   * Quick start: `gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -a example_file/alignment.gff3 -o chain.txt`
   * [Full documentation](docs/gff_to_chain.md)
 
+* agp_to_chain.py
+  * Quick start: `agp_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -a example_file/example.agp -o chain.txt`
+  * [Full documentation](docs/agp_to_chain.md)
+
 ### re-construct missing features in gff3
 
 * re_construct_gff3_features.py

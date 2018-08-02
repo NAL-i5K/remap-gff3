@@ -160,7 +160,8 @@ setup(
         'remap-gff3/bin/remap-gff3.py',
         'remap-gff3/bin/get_remove_feature.py',
         'remap-gff3/bin/gff_to_chain.py',
-        'remap-gff3/bin/re_construct_gff3_features.py'
+        'remap-gff3/bin/re_construct_gff3_features.py',
+        'remap-gff3/bin/agp_to_chain.py',
     ],
     entry_points={  # Optional
     },
