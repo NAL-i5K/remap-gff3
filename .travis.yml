@@ -10,7 +10,7 @@ matrix:
     - pip install .
     script:
     - remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa
-      example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3
+      example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3 -s NCBI -b Hazt_2.0
     - gff_to_chain.py -t_fa example_file/target.fa -q_fa example_file/query.fa -a
       example_file/alignment.gff3 -o chain.txt
     - re_construct_gff3_features.py -old_g example_file/example1.gff3 -new_g example_file/example1_CrossMap_filtered.gff3
@@ -26,7 +26,7 @@ matrix:
     script:
     - docker run remap-gff3 remap-gff3.py -a example_file/alignment.gff3 -t_fa
       example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3
-      example_file/example2.gff3
+      example_file/example2.gff3 -s NCBI -b Hazt_2.0
     - docker run remap-gff3 gff_to_chain.py -t_fa example_file/target.fa -q_fa
       example_file/query.fa -a example_file/alignment.gff3 -o chain.txt
     - docker run remap-gff3 re_construct_gff3_features.py -old_g example_file/example1.gff3

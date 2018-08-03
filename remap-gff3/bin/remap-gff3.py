@@ -1,10 +1,6 @@
 #! /usr/bin/env python
 # Contributed by Li-Mei Chiang <dytk2134 [at] gmail [dot] com> (2018)
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
+
 import os
 import re
 import sys
@@ -186,7 +182,19 @@ def get_summary(update_gff, remove_gff, summary_report, removed_list):
             values = [rm[key] for key in header]
             outline = '\t'.join(values)
             out_f.write(outline + '\n')
+def add_string_to_file(in_f, add_line, line_num):
+    current_line = 0
+    lines = list()
+    with open(in_f, 'r') as out_f:
+        lines = out_f.readlines()
 
+    with open(in_f, 'w') as out_f:
+        for line in lines:
+            current_line += 1
+            if current_line == line_num:
+                out_f.write(add_line + '\n')
+            else:
+                out_f.write(line)
 
 if __name__ == '__main__':
     import argparse
@@ -196,7 +204,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
 
     Quick start:
-    %(prog)s -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3
+    %(prog)s -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3  -s NCBI -b Hazt_2.0
     """))
 
     parser.add_argument('-a', '--alignment_file', type=str, help='NCBI\'s whole-genome alignments(gff3 format).')
@@ -204,6 +212,8 @@ if __name__ == '__main__':
     parser.add_argument('-q_fa', '--query_fasta', type=str, help='Query genome assembly', required=True)
     parser.add_argument('-dir', '--out_dir', type=str, help='Output directory', required=True)
     parser.add_argument('-g', '--input_gff', nargs='+', type=str, help='List one or more GFF3 files to be updated.', required=True)
+    parser.add_argument('-s', '--source', type=str, help='Source of the assembly.', required=True)
+    parser.add_argument('-b', '--buildName', type=str, help='The genome assembly build name used for the coordinates.', required=True)
     parser.add_argument('-tmp_ID', '--tmp_identifier', action="store_true", help='Generate a unique temporary identifier for all the feature in the input gff3 files. (Default: False)', default=False)
     parser.add_argument('-summary', '--summary_report', action="store_true", help='Generate a document that summarizes the change in feature types after remapping and lists the removed features',default=False)
     parser.add_argument('-chain', '--chain_file', type=str, help='Input a ready-made chain file.')
@@ -303,9 +313,11 @@ if __name__ == '__main__':
             summary_report = os.path.join(args.out_dir, '%s%s' % (gff3_filename, '_summary.tsv'))
             removed_list = os.path.join(args.out_dir, '%s%s' % (gff3_filename, '_removed.tsv'))
             get_summary(update_gff, remove_gff, summary_report, removed_list)
+        # add ##genome-build source buildName to the second line
+        genome_build = '##genome-build %s %s' % (args.source, args.buildName)
+        add_string_to_file(update_gff, genome_build, 2)
         logger.info('===== Run gff3_QC to generate QC report for updated GFF3 files =====')
         subprocess.Popen(['gff3_QC', '-g', update_gff, '-f', args.query_fasta, '-o', update_gff_QC]).wait()
-        
     if args.temp:
         for rmfile in rm_tmp_list:
             os.remove(rmfile)
