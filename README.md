@@ -108,7 +108,9 @@ optional arguments:
   -g INPUT_GFF [INPUT_GFF ...], --input_gff INPUT_GFF [INPUT_GFF ...]
                         List one or more GFF3 files to be updated.
   -s SOURCE, --source SOURCE
-                        Source of the assembly.
+                        Source of the assembly (e.g. NCBI). This generates 
+			a pragma line recommended by the gff3 specification
+			(https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md)
   -b BUILDNAME, --buildName BUILDNAME
                         The genome assembly (build) name used for the
                         coordinates. This generates a pragma line 
