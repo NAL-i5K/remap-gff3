@@ -110,8 +110,10 @@ optional arguments:
   -s SOURCE, --source SOURCE
                         Source of the assembly.
   -b BUILDNAME, --buildName BUILDNAME
-                        The genome assembly build name used for the
-                        coordinates.
+                        The genome assembly (build) name used for the
+                        coordinates. This generates a pragma line 
+			recommended by the gff3 specification 
+			(https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md)
   -tmp_ID, --tmp_identifier
                         Generate a unique temporary identifier for all the
                         feature in the input gff3 files. (Default: False)
