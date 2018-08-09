@@ -193,6 +193,7 @@ def add_string_to_file(in_f, add_line, line_num):
             current_line += 1
             if current_line == line_num:
                 out_f.write(add_line + '\n')
+                out_f.write(line)
             else:
                 out_f.write(line)
 
