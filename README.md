@@ -87,12 +87,13 @@ For container deployment, you can build a image from a Dockerfile or get a pre-b
 
 ``` shell
 usage: remap-gff3.py [-h] -a ALIGNMENT_FILE -t_fa TARGET_FASTA -q_fa
-                     QUERY_FASTA -g INPUT_GFF [INPUT_GFF ...] [-tmp_ID]
+                     QUERY_FASTA -g INPUT_GFF [INPUT_GFF ...] -s
+                     SOURCE -b BUILDNAME [-tmp_ID]
                      [-chain CHAIN_FILE] [-tmp] [-u UPDATED_POSTFIX]
                      [-r REMOVED_POSTFIX] [-v]
 
 Quick start:
-remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3
+remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3 -s NCBI -b Hazt_2.0
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -106,6 +107,15 @@ optional arguments:
                         Output directory
   -g INPUT_GFF [INPUT_GFF ...], --input_gff INPUT_GFF [INPUT_GFF ...]
                         List one or more GFF3 files to be updated.
+  -s SOURCE, --source SOURCE
+                        Source of the assembly (e.g. NCBI). This generates 
+			a pragma line recommended by the gff3 specification
+			(https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md)
+  -b BUILDNAME, --buildName BUILDNAME
+                        The genome assembly (build) name used for the
+                        coordinates. This generates a pragma line 
+			recommended by the gff3 specification 
+			(https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md)
   -tmp_ID, --tmp_identifier
                         Generate a unique temporary identifier for all the
                         feature in the input gff3 files. (Default: False)
@@ -128,7 +138,7 @@ optional arguments:
 
 ### Example
 
-* Quick start: `remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3 -summary`
+* Quick start: `remap-gff3.py -a example_file/alignment.gff3 -t_fa example_file/target.fa -q_fa example_file/query.fa -dir output -tmp_ID -g example_file/example1.gff3 example_file/example2.gff3 -summary -s NCBI -b Hazt_2.0`
 
 * NCBI's whole-genome  alignments(gff3 format)
 
@@ -161,6 +171,7 @@ KN234853.1      OGSv1.0 CDS     961300  961512  .       -       0       ID=HAZT0
 * updated gff3 file
 
 ```shell
+##genome-build NCBI Hazt_2.0
 NW_017250073.1  OGSv1.0 gene    157594  157806  .       -       .       method=Maker2;Dbxref=I5KNAL:HAZT001066;ID=HAZT001066;Name=HAZT001066
 NW_017250073.1  OGSv1.0 mRNA    157594  157806  .       -       .       method=Maker2;ID=HAZT001066-RA;Parent=HAZT001066;Name=HAZT001066-RA
 NW_017250073.1  OGSv1.0 exon    157594  157806  .       -       .       ID=HAZT001066-RA-EXON01;Parent=HAZT001066-RA;method=Maker2
