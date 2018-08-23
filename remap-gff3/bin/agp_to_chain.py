@@ -1,9 +1,4 @@
 #! /usr/bin/env python
-# Contributed by Li-Mei Chiang <dytk2134 [at] gmail [dot] com> (2018)
-
-
-import sys
-import re
 import logging
 import gzip
 

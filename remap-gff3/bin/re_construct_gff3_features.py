@@ -1,15 +1,5 @@
 #! /usr/bin/env python
-# Contributed by Li-Mei Chiang <dytk2134 [at] gmail [dot] com> (2018)
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-
-import sys
-import re
 import copy
-from itertools import groupby
 from gff3 import Gff3
 import logging
 logger = logging.getLogger(__name__)
