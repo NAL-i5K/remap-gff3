@@ -21,9 +21,12 @@ def tmp_identifier(in_gff, out_gff):
     with open(in_gff, 'rb') as in_f:
         for line in in_f:
             line = line.strip()
-            if len(line) != 0:
+            if line:
                 if not line.startswith('#'):
                     tokens = line.split('\t')
+                    if len(tokens) != 9:
+                        logger.warning('Features should contain 9 fields, got %d: %s' % (len(tokens) - 1, repr(tokens[1:])))
+                        continue
                     attributes = dict(re.findall('([^=;]+)=([^=;\n]+)', tokens[8]))
                     # add tmp_identifier attribute to feature in gff3 file
                     temp_id = str(uuid.uuid1())
@@ -34,6 +37,9 @@ def tmp_identifier(in_gff, out_gff):
                     # update cloumn 9
                     tokens[8] = ';'.join(attributes_list)
                     out_f.write('\t'.join(tokens) + '\n')
+                elif line.startswith('##FASTA'):
+                    # ignore embedded ##FASTA sequence
+                    break
                 else:
                     out_f.write(line + '\n')
 
@@ -42,9 +48,12 @@ def remove_tmpID(in_gff, out_gff):
     with open(in_gff, 'rb') as in_f:
         for line in in_f:
             line = line.strip()
-            if len(line) != 0:
+            if line:
                 if not line.startswith('#'):
                     tokens = line.split('\t')
+                    if len(tokens) != 9:
+                        logger.warning('Features should contain 9 fields, got %d: %s' % (len(tokens) - 1, repr(tokens[1:])))
+                        continue
                     attributes = dict(re.findall('([^=;]+)=([^=;\n]+)', tokens[8]))
                     del attributes['tmp_identifier']
                     attributes_list = list()
@@ -53,6 +62,9 @@ def remove_tmpID(in_gff, out_gff):
                     # update cloumn 9
                     tokens[8] = ';'.join(attributes_list)
                     out_f.write('\t'.join(tokens) + '\n')
+                elif line.startswith('##FASTA'):
+                    # ignore embedded ##FASTA sequence
+                    break
                 else:
                     out_f.write(line + '\n')
 
@@ -62,7 +74,7 @@ def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_fil
     with open(CrossMap_log_file, 'rb') as log:
         for line in log:
             line = line.strip()
-            if len(line) != 0:
+            if line:
                 if line[0] != '#':
                     token = line.split("\t")
                     if len(token) < 10:
@@ -91,7 +103,7 @@ def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_fil
     with open(CrossMap_mapped_file, 'rb') as in_f:
         for line in in_f:
             line = line.strip()
-            if len(line) != 0:
+            if line:
                 if line[0] != '#':
                     token = line.split("\t")
                     if len(token) != 9:

@@ -27,9 +27,12 @@ def get_features_ID(gff, tmp_identifier):
     with open(gff, 'rb') as in_f:
         for line in in_f:
             line = line.strip()
-            if len(line) != 0:
+            if line:
                 if not line.startswith('#'):
                     tokens = line.split('\t')
+                    if len(tokens) != 9:
+                        logger.warning('Features should contain 9 fields, got %d: %s' % (len(tokens) - 1, repr(tokens[1:])))
+                        continue
                     attributes = dict(re.findall('([^=;]+)=([^=;\n]+)', tokens[8]))
                     try:
                         features_ID_set.add(attributes[ID_key])
@@ -48,9 +51,12 @@ def output_remove_features(old_gff, new_gff, output_gff, tmp_identifier):
     with open(old_gff, 'rb') as in_f:
         for line in in_f:
             line = line.strip()
-            if len(line) != 0:
+            if line:
                 if not line.startswith('#'):
                     tokens = line.split('\t')
+                    if len(tokens) != 9:
+                        logger.warning('Features should contain 9 fields, got %d: %s' % (len(tokens) - 1, repr(tokens[1:])))
+                        continue
                     attributes = dict(re.findall('([^=;]+)=([^=;\n]+)', tokens[8]))
                     try:
                         if attributes[ID_key] not in new_features_ID_set:
