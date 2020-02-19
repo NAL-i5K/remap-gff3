@@ -16,7 +16,7 @@ def get_features_ID(gff, tmp_identifier):
     ID_key = 'ID'
     if tmp_identifier:
         ID_key = 'tmp_identifier'
-    with open(gff, 'rb') as in_f:
+    with open(gff, 'r') as in_f:
         for line in in_f:
             line = line.strip()
             if line:
@@ -40,7 +40,7 @@ def output_remove_features(old_gff, new_gff, output_gff, tmp_identifier):
     ID_key = 'ID'
     if tmp_identifier:
         ID_key = 'tmp_identifier'
-    with open(old_gff, 'rb') as in_f:
+    with open(old_gff, 'r') as in_f:
         for line in in_f:
             line = line.strip()
             if line:

@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import re
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -17,12 +18,12 @@ def fasta_file_sequence_length(fasta_file):
     # True: finished; False: processing
     sequence_length = dict()
     sequence_id = None
-    with open(fasta_file, 'rb') as fasta_file_f:
+    with open(fasta_file, 'r') as fasta_file_f:
         for line in fasta_file_f:
             line = line.strip()
             if len(line) != 0:
                 if line[0] == '>':
-                    lines = line.split(' ')
+                    lines = str(line.split(' '))
                     if sequence_id == None:
                         # the first sequence
                         sequence_id = lines[0][1:]
@@ -56,7 +57,7 @@ def main(alignment_file, target, query, output):
 
     out_f = open(output, 'w')
 
-    with open(alignment_file, 'rb') as in_f:
+    with open(alignment_file, 'r') as in_f:
         for line in in_f:
             line = line.strip()
             if len(line) != 0:

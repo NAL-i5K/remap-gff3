@@ -16,7 +16,7 @@ __version__ = '1.0'
 def tmp_identifier(in_gff, out_gff):
     import uuid
     out_f = open(out_gff, 'w')
-    with open(in_gff, 'rb') as in_f:
+    with open(in_gff, 'r') as in_f:
         for line in in_f:
             line = line.strip()
             if line:
@@ -43,7 +43,7 @@ def tmp_identifier(in_gff, out_gff):
 
 def remove_tmpID(in_gff, out_gff):
     out_f = open(out_gff, 'w')
-    with open(in_gff, 'rb') as in_f:
+    with open(in_gff, 'r') as in_f:
         for line in in_f:
             line = line.strip()
             if line:
@@ -69,7 +69,7 @@ def remove_tmpID(in_gff, out_gff):
 def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_file,tmp_identifier):
     not_exact_match = set()
     ID_set = set()
-    with open(CrossMap_log_file, 'rb') as log:
+    with open(CrossMap_log_file, 'r') as log:
         for line in log:
             line = line.strip()
             if line:
