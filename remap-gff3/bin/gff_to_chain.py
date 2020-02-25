@@ -23,7 +23,7 @@ def fasta_file_sequence_length(fasta_file):
             line = line.strip()
             if len(line) != 0:
                 if line[0] == '>':
-                    lines = str(line.split(' '))
+                    lines = line.split(' ') 
                     if sequence_id == None:
                         # the first sequence
                         sequence_id = lines[0][1:]
@@ -41,6 +41,8 @@ def fasta_file_sequence_length(fasta_file):
                             logger.warning('Duplicate ID found! %s' % (sequence_id))
                 else:
                     sequence_length[sequence_id]['length'] += len(line)
+    #logger.warning('Sequence_length: %s'%(sequence_length))
+    #sys.exit()
     return sequence_length
 def main(alignment_file, target, query, output):
     logger.info('Reading target genome assembly: (%s)...\n', target)

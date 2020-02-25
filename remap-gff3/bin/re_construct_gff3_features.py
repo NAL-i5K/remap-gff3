@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import copy
-from gff3 import Gff3
+from gff3tool.lib.gff3 import Gff3
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
