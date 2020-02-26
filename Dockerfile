@@ -14,9 +14,9 @@ RUN apt-get update && apt-get install --yes \
  libncurses5-dev \
  autotools-dev \
  perl \
- python \
- python-pip \
- python-dev \
+ python3 \
+ python3-pip \
+ python3-dev \
  dos2unix
 
  WORKDIR /opt
