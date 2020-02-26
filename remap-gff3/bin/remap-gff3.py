@@ -98,7 +98,7 @@ def filter_not_exact_match(CrossMap_mapped_file, CrossMap_log_file, filtered_fil
                                 not_exact_match.add(attribute_dict['ID'])
 
     out_f = open(filtered_file, 'w')
-    with open(CrossMap_mapped_file, 'rb') as in_f:
+    with open(CrossMap_mapped_file, 'r') as in_f:
         for line in in_f:
             line = line.strip()
             if line:
