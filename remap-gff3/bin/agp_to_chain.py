@@ -17,16 +17,12 @@ def fasta_file_sequence_length(fasta_file):
     # True: finished; False: processing
     sequence_length = dict()
     sequence_id = None
-    if fasta_file.endswith('.gz'):
-        opener = gzip.open
-    else:
-        opener = open
-    with open(fasta_file, 'rb') as fasta_file_f:
+    with open(fasta_file, 'r') as fasta_file_f:
         for line in fasta_file_f:
             line = line.strip()
             if len(line) != 0:
                 if line[0] == '>':
-                    lines = line.split(' ')
+                    lines = line.split(' ') 
                     if sequence_id == None:
                         # the first sequence
                         sequence_id = lines[0][1:]
@@ -112,7 +108,6 @@ if __name__ == '__main__':
     import argparse
     from textwrap import dedent
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=dedent("""\
-
     Quick start:
     %(prog)s -t_fa example_file/target.fa -q_fa example_file/query.fa -a example_file/example.agp -o chain.txt
     """))
@@ -125,3 +120,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     main(agp_file=args.agp_file, target=args.target_fasta, query=args.query_fasta, output=args.output)
+

@@ -118,9 +118,8 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'gff3==0.3.0',
-        'CrossMap>=0.2.8',
-        'gff3tool>=1.4.3'
+        'CrossMap==0.4.0',
+        'gff3tool==2.0.0'
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development

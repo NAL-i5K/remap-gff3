@@ -14,13 +14,14 @@ RUN apt-get update && apt-get install --yes \
  libncurses5-dev \
  autotools-dev \
  perl \
- python \
- python-pip \
- python-dev \
- dos2unix
+ python3 \
+ python3-pip \
+ python3-dev \
+ dos2unix \
+ && pip3 install --upgrade pip
 
  WORKDIR /opt
  RUN mkdir remap-gff3
  COPY . /opt/remap-gff3/
  WORKDIR /opt/remap-gff3
- RUN find . -type f -print0 | xargs -0 dos2unix && pip install .
+ RUN find . -type f -print0 | xargs -0 dos2unix && pip3 install .
