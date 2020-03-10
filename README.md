@@ -37,7 +37,7 @@ It is reasonable to expect that genome assemblies will be updated, sometimes fro
 
 ## Dependencies
 
-* python2.7
+* python3
     * Packages/Modules:
         * CrossMap
         * gff3
