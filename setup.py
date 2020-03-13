@@ -119,7 +119,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         'CrossMap==0.4.0',
-        'gff3tool==2.0.0'
+        'gff3tool>=2.0.0'
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
