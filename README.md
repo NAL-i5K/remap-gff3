@@ -1,6 +1,6 @@
 # remap-gff3 : Python programs for updating gff3 coordinates to new assembly versions
 
-[![Build Status](https://travis-ci.org/NAL-i5K/remap-gff3.svg?branch=master)](https://travis-ci.org/NAL-i5K/remap-gff3)
+[![Build Status](https://app.travis-ci.com/NAL-i5K/remap-gff3.svg?branch=master)](https://app.travis-ci.com/NAL-i5K/remap-gff3)
 
 ## Background
 
